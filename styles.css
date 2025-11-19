@@ -240,6 +240,7 @@ div > .card:hover {
 
 /* pricing card cleanup + hover (remove .princing-card typo) */
 .pricing-card {
+	
 	max-width: 420px !important ;
 	margin: 0 auto;
 	width: auto !important ;
