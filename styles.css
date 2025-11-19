@@ -11,10 +11,8 @@
 	--innov-violet: #ffdf2d;
 	--innov-pink: #ffe6af;
 	--ease-out: cubic-bezier(.2,.8,.2,1);
-	--gradient: radial-gradient(42% 46% at 12% 18%, rgb(1, 37, 12), transparent 100%),
-	            radial-gradient(48% 52% at 28% 82%, rgb(2, 34, 40), transparent 100%),
-	            radial-gradient(50% 55% at 88% 28%, rgb(30, 38, 55), transparent 100%),
-	            radial-gradient(60% 62% at 78% 72%, rgba(55, 9, 35, 0.55), transparent 100%);
+	--gradient: radial-gradient(55% 65% at 20% 20%, rgba(35, 36, 39, 0.7), transparent 70%),
+	            radial-gradient(65% 75% at 80% 75%, rgba(41, 46, 60, 0.85), #0f1014);
 	--maxw: 1200px;	
 }
 *,
@@ -271,10 +269,10 @@ div > .card:hover {
 	font-size: clamp(4.5rem, 11vw, 6rem);
 	font-weight: 800;
 	line-height: .85;
-	background: linear-gradient(140deg, #0f9d58, #00c853 45%, #66ff99);
+	background: linear-gradient(140deg, #fadc45, #fadc45 45%, #fadc45);
 	-webkit-background-clip: text;
 	color: transparent;
-	text-shadow: 0 8px 32px rgba(15, 157, 88, 0.35);
+	text-shadow: 0 8px 32px rgba(250, 220, 69, 0.35);
 }
 .price-prefix,
 .price-suffix {
@@ -291,8 +289,10 @@ div > .card:hover {
 }
 .price-alt {
 	display: flex;
-	align-items: center;
-	flex-direction: column;
+	align-items: flex-start;
+	flex-direction: row;
+	justify-content: center;
+	gap: 0.35rem;
 	margin: 0 0 1rem;
 	font-size: 1.3rem;
 	font-weight: 600;
@@ -620,14 +620,12 @@ article {
 	}
 }
 
-.highlightyellow {
+.highlightyellow,
+ .highlightred{
 	color: #fadc45;
 }
 
 .highlightgreen {
-	color: #5eff63;
-}
-.highlightred {
-	color: #ff1201;
+	color: #00c853;
 }
 
