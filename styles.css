@@ -1,4 +1,5 @@
 :root {
+	padding: 0px !important;
 	--bg: #f6f7ff;
 	--accent: #ff7ac4;
 	--text: #ffffff;
@@ -120,7 +121,8 @@ body::after {
 	align-items: center;
 	position: relative;
 	border-radius: var(--radius);
-	background: rgba(255, 255, 255, 0.9);
+	background: linear-gradient(155deg, rgba(50, 54, 82, 0.9), rgba(24, 26, 44, 0.94));
+	color: #eef1ff;
 	padding: 1.5rem;
 	overflow: hidden;
 	text-align: center;
@@ -135,7 +137,9 @@ body::after {
 .carousel-slide {
 	min-width: 100%;
 	border-radius: calc(var(--radius) - 6px);
-	background: linear-gradient(160deg, #ffffff, #f6f2ff);
+	background: linear-gradient(165deg, rgba(46, 50, 78, 0.92), rgba(22, 24, 40, 0.95));
+	border: 1px solid rgba(118, 127, 185, 0.24);
+	color: #eef1ff;
 	padding: 1.2rem;
 	display: flex;
 	flex-direction: column;
@@ -198,9 +202,10 @@ body::after {
 	gap: 1.5rem;
 }
 .card {
-	background: rgba(255, 255, 255, 0.92);
-	border: 1px solid rgba(255, 122, 196, 0.15);
-	box-shadow: var(--shadow);
+	background: linear-gradient(160deg, rgba(53, 58, 88, 0.94), rgba(30, 33, 56, 0.96));
+	border: 1px solid rgba(126, 133, 192, 0.28);
+	box-shadow: 0 28px 60px rgba(6, 8, 20, 0.45);
+	color: #f1f3ff;
 	padding: 1.8rem;
 	border-radius: var(--radius);
 	backdrop-filter: blur(12px);
@@ -243,7 +248,10 @@ div > .card:hover {
 	margin: 0 auto;
 	width: auto !important ;
 	text-align: center;
-	background: linear-gradient(150deg, rgba(255, 255, 255, 0.98), rgba(240, 240, 240, 0.9));
+	background: linear-gradient(160deg, rgba(53, 58, 88, 0.95), rgba(30, 33, 56, 0.96));
+	border: 1px solid rgba(126, 133, 192, 0.32);
+	box-shadow: 0 32px 70px rgba(6, 8, 20, 0.55);
+	color: #e5e7ff;
 	padding: 2.5rem;
 	border-radius: var(--radius);
 	transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out);
@@ -269,10 +277,10 @@ div > .card:hover {
 	font-size: clamp(4.5rem, 11vw, 6rem);
 	font-weight: 800;
 	line-height: .85;
-	background: linear-gradient(140deg, #fadc45, #fadc45 45%, #fadc45);
+	background: linear-gradient(120deg, #7dd3fc, #a855f7 60%, #facc15);
 	-webkit-background-clip: text;
 	color: transparent;
-	text-shadow: 0 8px 32px rgba(250, 220, 69, 0.35);
+	text-shadow: 0 18px 40px rgba(168, 85, 247, 0.35);
 }
 .price-prefix,
 .price-suffix {
@@ -285,18 +293,18 @@ div > .card:hover {
 	align-items: flex-end;
 	margin-bottom: 10px;
 	font-weight: 600;
-	color: #0b7d46;
+	color: rgba(229, 231, 255, 0.8);
 }
 .price-alt {
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	flex-direction: row;
 	justify-content: center;
 	gap: 0.35rem;
 	margin: 0 0 1rem;
 	font-size: 1.3rem;
 	font-weight: 600;
-	color: #0f9d58;
+	color: #7dd3fc;
 	text-align: center;
 }
 /* Remove old price span styling conflicts (override) */
@@ -307,7 +315,7 @@ div > .card:hover {
 	margin: 0 0 1.5rem;
 	display: grid;
 	gap: 0.4rem;
-	color: var(--muted);
+	color: rgba(217, 220, 255, 0.8);
 		display: flex;
 	flex-direction: column;
 	align-items: start;
@@ -506,7 +514,7 @@ article {
 .faq {
 	--text: #1f1235;
 
-	padding: 3.5rem clamp(1.5rem, 4vw, 5rem);
+	padding: 0px !important;
 	text-align: center;
 	width: 100%;
 }
@@ -518,8 +526,9 @@ article {
 }
 .faq-item {
 	border-radius: var(--radius);
-	background: rgba(255,255,255,0.85);
-	box-shadow: var(--shadow);
+	background: linear-gradient(158deg, rgba(47, 51, 79, 0.92), rgba(25, 27, 44, 0.95));
+	border: 1px solid rgba(122, 130, 190, 0.28);
+	color: #f4f6ff;
 	overflow: hidden;
 	transition: transform .3s var(--ease-out), box-shadow .3s var(--ease-out);
 }
@@ -536,7 +545,7 @@ article {
 	padding: 1.2rem 1.4rem;
 	background: none;
 	border: none;
-	color: var(--text);
+	color: #f5f7ff;
 	font-size: 1.05rem;
 	font-weight: 600;
 	cursor: pointer;
@@ -557,7 +566,7 @@ article {
 .faq-item.open .faq-icon { transform: rotate(45deg); }
 .faq-content {
 	padding: 0 1.4rem 1.2rem;
-	color: var(--muted);
+	color: rgba(209, 213, 255, 0.78);
 	line-height: 1.6;
 }
 .whoami {
@@ -570,8 +579,9 @@ article {
 	display: flex;
 	align-items: center;
 	gap: 2.5rem;
-	background: rgba(255, 255, 255, 0.9);
-	box-shadow: var(--shadow);
+	background: linear-gradient(162deg, rgba(49, 53, 83, 0.9), rgba(23, 25, 41, 0.94));
+	border: 1px solid rgba(118, 126, 188, 0.25);
+	color: #f4f6ff;
 	border-radius: var(--radius);
 	padding: clamp(1.5rem, 3vw, 2.5rem);
 	backdrop-filter: blur(12px);
@@ -593,8 +603,8 @@ article {
 }
 .bio-text p {
 	margin: 0;
-	color: var(--muted);
-	line-height: 1.7;
+	color: #f4f6ff;
+	font-weight: 300;
 }
 .bio-portrait {
 	flex: 1 1 35%;
@@ -627,5 +637,13 @@ article {
 
 .highlightgreen {
 	color: #00c853;
+}
+.pricing-card ul h3 {
+	color: #f4f6ff;
+	font-weight: 400;
+}
+.pricing-card ul li {
+	color: #f8faff;
+	font-weight: 400;
 }
 
