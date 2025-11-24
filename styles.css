@@ -188,7 +188,7 @@ body::after {
 }
 .testimonials,
 .pricing {
-	padding: 3.5rem clamp(1.5rem, 4vw, 5rem);
+	padding: 0 clamp(1.5rem, 4vw, 5rem) 3.5rem clamp(1.5rem, 4vw, 5rem);
 }
 .features h2,h1,h3,
 .testimonials h2,
@@ -438,6 +438,7 @@ article {
 .features > *,
 .testimonials > *,
 .pricing > * {
+	padding-top: 0px !important;
 	max-width: var(--maxw);
 	width: 100%;
 	margin-inline: auto;
