@@ -95,7 +95,6 @@ const selectors = {
     mins: document.getElementById("cd-mins"),
     secs: document.getElementById("cd-secs"),
   },
-  faqToggles: document.querySelectorAll(".faq-toggle"),
   animated: document.querySelectorAll("[data-animate]"),
 };
 
@@ -133,21 +132,6 @@ function startCountdown() {
   tick();
 }
 
-function setupFaq() {
-  selectors.faqToggles.forEach((toggle) => {
-    toggle.addEventListener("click", () => {
-      const expanded = toggle.getAttribute("aria-expanded") === "true";
-      toggle.setAttribute("aria-expanded", String(!expanded));
-      const content = toggle.nextElementSibling;
-      if (!expanded) {
-        content.removeAttribute("hidden");
-      } else {
-        content.setAttribute("hidden", "");
-      }
-    });
-  });
-}
-
 function setupScrollAnimations() {
   if (!("IntersectionObserver" in window)) {
     selectors.animated.forEach((el) => el.classList.add("is-visible"));
@@ -174,6 +158,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	setupCarousel('testimonials', testimonialSlides);
 	setupReveal();
 	startCountdown();
-	setupFaq();
 	setupScrollAnimations();
 });
