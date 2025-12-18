@@ -80,6 +80,7 @@ body::after {
 
 
 .cta {
+	width: max-content;
 	padding: 0.9rem 1.4rem;
 	border-radius: var(--radius);
 	font-weight: 700;
