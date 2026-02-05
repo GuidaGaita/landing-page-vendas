@@ -183,6 +183,8 @@ body::after {
 	/* padding: 3.5rem clamp(1.5rem, 4vw, 5rem); */
 	margin-bottom: 0px !important;
 	--text: #1f1235;
+	position: relative;
+	overflow: hidden;
 
 	display: flex;
 	flex-direction: column;
@@ -190,6 +192,16 @@ body::after {
 	width: 100%;
 	padding: 3.5rem clamp(1.5rem, 4vw, 5rem);
 	gap: 1.5rem;
+}
+.features::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(15, 16, 20, 0.65), rgba(15, 16, 20, 0.55)),
+		url('assets/capa%20yt.JPG') center/cover no-repeat;
+	opacity: 0.33;
+	z-index: -1;
+	filter: saturate(110%);
 }
 .testimonials,
 .pricing {
