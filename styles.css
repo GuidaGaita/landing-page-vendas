@@ -199,7 +199,7 @@ body::after {
 	inset: 0;
 	background: linear-gradient(180deg, rgba(15, 16, 20, 0.65), rgba(15, 16, 20, 0.55)),
 		url('assets/capa%20yt.JPG') center/cover no-repeat;
-	opacity: 0.33;
+	opacity: 1;
 	z-index: -1;
 	filter: saturate(110%);
 }
