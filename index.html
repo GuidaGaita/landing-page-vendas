@@ -3,258 +3,550 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Aprenda a tocar gaita diatônica com o método GuidaGaita. 70+ aulas, acesso vitalício e suporte direto com o professor Guilherme Barros." />
-    <meta property="og:title" content="GuidaGaita — O Método Descomplicado" />
-    <meta property="og:description" content="Do zero à primeira música em semanas. Apenas 10 minutos por dia, sem enrolação." />
-    <meta property="og:image" content="assets/thumb do checkout.png" />
-    <title>GuidaGaita — O Método Descomplicado</title>
+    <meta name="theme-color" content="#0A0705" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230A0705'/><rect x='4.5' y='11' width='23' height='10' rx='2.5' fill='none' stroke='%23E2622C' stroke-width='2'/><path d='M10 14.5v3M14 14.5v3M18 14.5v3M22 14.5v3' stroke='%23E0A83E' stroke-width='1.7' stroke-linecap='round'/></svg>" />
+
+    <title>GuidaGaita — Do zero à primeira música em poucas semanas</title>
+    <meta name="description" content="Aprenda gaita diatônica com 10 minutos por dia. Mais de 100 aulas diretas ao ponto, acesso vitalício, comunidade e suporte com o professor Guilherme Barros. Garantia de 7 dias." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="GuidaGaita — No duelo entre você e a gaita, só falta você sacar" />
+    <meta property="og:description" content="Do zero à primeira música em poucas semanas, com 10 minutos por dia. 100+ aulas, acesso vitalício e garantia de 7 dias." />
+    <meta property="og:image" content="assets/hero-duelo.jpg" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Outfit:wght@300;400;500;600;700;800;900&family=Rye&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-    <!-- Grain texture overlay -->
-    <div class="noise-overlay" aria-hidden="true"></div>
+<!-- Texturas de ambiente: grão de filme + vinheta -->
+<div class="fx-grain" aria-hidden="true"></div>
+<div class="fx-vignette" aria-hidden="true"></div>
 
-    <!-- Sticky mobile CTA bar -->
-    <div class="sticky-cta" id="sticky-cta">
-        <a href="#pricing" class="cta cta--sticky">50% OFF — Garantir por R$ 147</a>
+<!-- ══════════ HEADER ══════════ -->
+<header class="site-header" id="site-header">
+    <div class="shell site-header__inner">
+        <a href="#top" class="brand" aria-label="GuidaGaita — início">
+            <span class="brand__mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="8" width="20" height="8" rx="1.5"/>
+                    <path d="M5 11.5v1M8 11.5v1M11 11.5v1M14 11.5v1M17 11.5v1M19.5 11.5v1"/>
+                </svg>
+            </span>
+            <span class="brand__name">GuidaGaita</span>
+        </a>
+        <a href="#oferta" class="btn btn--ghost btn--sm site-header__cta">Ver o método</a>
+    </div>
+</header>
+
+<!-- ══════════ BARRA FIXA MOBILE ══════════ -->
+<div class="dock" id="dock">
+    <a href="#oferta" class="btn btn--solid btn--dock">Começar agora — R$&nbsp;147</a>
+</div>
+
+<main id="top">
+
+    <!-- ══════════ 1. HERO ══════════ -->
+    <section class="hero">
+        <div class="hero__photo">
+            <img src="assets/hero-duelo.jpg"
+                 alt="Guilherme Barros apontando duas gaitas diatônicas para a câmera como se fossem revólveres, na terra vermelha ao lado de um trem de carga"
+                 width="2400" height="1600" fetchpriority="high" decoding="async">
+        </div>
+        <div class="hero__scrim" aria-hidden="true"></div>
+        <canvas class="hero__dust" id="dust" aria-hidden="true"></canvas>
+
+        <div class="shell hero__grid">
+
+            <div class="hero__copy">
+                <p class="eyebrow reveal" style="--d:0ms">
+                    <span class="eyebrow__star" aria-hidden="true">★</span>
+                    O método GuidaGaita
+                    <span class="eyebrow__star" aria-hidden="true">★</span>
+                </p>
+
+                <h1 class="hero__title reveal" style="--d:50ms">
+                    No duelo entre você<br>e a gaita,
+                    <span class="ink-gold">só falta você sacar.</span>
+                </h1>
+
+                <p class="hero__sub reveal" style="--d:100ms">
+                    Do zero à primeira música em poucas semanas, com <strong>10 minutos por dia</strong>.
+                    Sem teoria chata, sem precisar de “dom musical” — só o caminho certo, na ordem certa.
+                </p>
+
+                <div class="hero__actions reveal" style="--d:150ms">
+                    <a href="#oferta" class="btn btn--solid">Quero tocar minha primeira música</a>
+                    <a href="#previa" class="btn btn--link" data-audio-link hidden>
+                        <span class="btn__play" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+                        </span>
+                        Ouvir uma prévia
+                    </a>
+                </div>
+
+                <dl class="stats reveal" style="--d:200ms">
+                    <div class="stats__item">
+                        <dt class="stats__num" data-count="100" data-suffix="+">0</dt>
+                        <dd class="stats__label">aulas</dd>
+                    </div>
+                    <div class="stats__item">
+                        <dt class="stats__num">Vitalício</dt>
+                        <dd class="stats__label">acesso</dd>
+                    </div>
+                    <div class="stats__item">
+                        <dt class="stats__num" data-count="10" data-suffix=" min">0</dt>
+                        <dd class="stats__label">por dia</dd>
+                    </div>
+                    <div class="stats__item">
+                        <dt class="stats__num" data-count="7" data-suffix=" dias">0</dt>
+                        <dd class="stats__label">de garantia</dd>
+                    </div>
+                </dl>
+            </div>
+
+        </div>
+
+        <a href="#problema" class="scroll-hint" aria-label="Rolar para o conteúdo">
+            <span class="scroll-hint__line" aria-hidden="true"></span>
+        </a>
+    </section>
+
+    <!-- ══════════ 2. FAIXA ROLANTE ══════════ -->
+    <div class="ticker" aria-hidden="true">
+        <div class="ticker__track" id="ticker-track">
+            <span class="ticker__group">
+                <span>100+ aulas</span><b>★</b>
+                <span>Acesso vitalício</span><b>★</b>
+                <span>10 minutos por dia</span><b>★</b>
+                <span>Garantia de 7 dias</span><b>★</b>
+                <span>Suporte com o professor</span><b>★</b>
+                <span>Comunidade de alunos</span><b>★</b>
+            </span>
+        </div>
     </div>
 
-    <main>
+    <!-- ══════════ 3. PROBLEMA ══════════ -->
+    <section class="section section--problema has-bg" id="problema">
+        <div class="section-bg section-bg--vagao" aria-hidden="true"></div>
+        <div class="shell">
+            <p class="eyebrow reveal">O problema</p>
+            <h2 class="section__title reveal">
+                Por que tanta gente<br>guarda a gaita <span class="ink-rust">na gaveta</span>
+            </h2>
 
-        <!-- ── HERO ── -->
-        <section class="hero">
-            <div class="hero-inner">
-                <span class="hero-badge">50% OFF — Oferta por tempo limitado</span>
-                <h1>Realize o sonho de <span class="highlight-gold">tocar gaita</span> com um método que cabe no seu bolso</h1>
-                <p class="hero-sub">Do zero à primeira música em poucos dias. Apenas 10 minutos por dia voce ja evolui!</p>
-                <a class="cta" href="#pricing">Quero começar agora</a>
-                <div class="hero-proof">
-                    <div class="proof-item">
-                        <strong>100+</strong>
-                        <span>aulas</span>
-                    </div>
-                    <div class="proof-divider" aria-hidden="true"></div>
-                    <div class="proof-item">
-                        <strong>Vitalício</strong>
-                        <span>acesso</span>
-                    </div>
-                    <div class="proof-divider" aria-hidden="true"></div>
-                    <div class="proof-item">
-                        <strong>10 min</strong>
-                        <span>por dia</span>
-                    </div>
-                </div>
+            <div class="pains">
+                <article class="pain reveal" style="--d:0ms">
+                    <span class="pain__num" aria-hidden="true">01</span>
+                    <h3 class="pain__title">O labirinto do YouTube</h3>
+                    <p>Dezenas de vídeos soltos, cada um ensinando de um jeito diferente. Você passa três horas assistindo e termina sem saber por onde começar.</p>
+                </article>
+
+                <article class="pain reveal" style="--d:60ms">
+                    <span class="pain__num" aria-hidden="true">02</span>
+                    <h3 class="pain__title">O som que não sai</h3>
+                    <p>Você sopra e sai um chiado. Como ninguém corrige sua embocadura, você repete o mesmo erro por meses e conclui que o problema é você.</p>
+                </article>
+
+                <article class="pain reveal" style="--d:120ms">
+                    <span class="pain__num" aria-hidden="true">03</span>
+                    <h3 class="pain__title">A gaveta</h3>
+                    <p>Sem uma sequência clara, a motivação acaba antes do primeiro resultado. E o instrumento que te empolgou vira enfeite de estante.</p>
+                </article>
             </div>
-        </section>
 
-        <!-- ── PROBLEM ── -->
-        <section class="problem">
-            <div class="section-inner">
-                <h2 data-animate>Por que a maioria desiste antes de tocar a <span class="highlight-red">primeira música?</span></h2>
-                <div class="problem-body" data-animate>
-                    <p>Você já tentou aprender sozinho pelo YouTube? Assistiu dezenas de vídeos diferentes, cada um falando uma coisa — e no final não sabia nem por onde começar.</p>
-                    <p>Ou pior: você até tirou alguns sons da gaita, mas nunca conseguiu tocar nada que prestasse. E aí guardou o instrumento na gaveta achando que "não era pra você".</p>
-                </div>
-                <div class="callout" data-animate>
-                    <p>O problema nunca foi você. Foi a falta de um <strong>caminho claro.</strong></p>
-                </div>
-                <div class="solution-text" data-animate>
-                    <p>Tocar gaita é simples — desde que alguém te mostre a sequência certa de passos. Você não precisa de "dom musical" nem de 2 horas por dia de treino.</p>
-                    <p>Com apenas <strong class="highlight-gold">10 minutos diários</strong>, seguindo um método testado e organizado, você sai do zero e toca sua primeira música em semanas.</p>
-                </div>
+            <blockquote class="turn reveal">
+                <p>O problema nunca foi você.<br>Foi a falta de um <span class="ink-gold">caminho claro.</span></p>
+            </blockquote>
+
+            <div class="prose reveal">
+                <p>Tocar gaita é simples — desde que alguém te mostre a sequência certa de passos. Você não precisa de talento natural, nem de duas horas livres por dia.</p>
+                <p>Com <strong>10 minutos diários</strong> e um método testado, você sai do zero e toca sua primeira música em poucas semanas. É exatamente isso que o GuidaGaita organiza pra você.</p>
             </div>
-        </section>
-
-        <div class="section-cta-wrap">
-            <a class="cta" href="#pricing">Quero tocar minha primeira música</a>
         </div>
+    </section>
 
-        <!-- ── MODULES ── -->
-        <section class="modules" id="modules">
-            <div class="section-inner">
-                <p class="section-label">O que você vai dominar</p>
-                <h2 data-animate>Tudo que você precisa,<br>sem nada que atrapalha</h2>
-                <div class="module-list">
+    <!--
+        ══════════ 4. PRÉVIA EM ÁUDIO ══════════
+        Esta seção fica escondida até você colocar o arquivo de áudio em:
+            assets/previa.mp3
+        Basta gravar um trecho seu tocando (30–60s) e salvar com esse nome.
+        O player, a forma de onda e o link "Ouvir uma prévia" do topo
+        aparecem sozinhos assim que o arquivo existir.
+    -->
+    <section class="section section--previa has-bg" id="previa" data-audio-section hidden>
+        <div class="section-bg section-bg--trilhos" aria-hidden="true"></div>
+        <div class="shell previa__inner">
+            <p class="eyebrow reveal">A prévia</p>
+            <h2 class="section__title reveal">Ouça onde<br>você vai chegar</h2>
+            <p class="prose prose--center reveal">
+                Antes de ler mais qualquer coisa, escute. É esse som que sai de uma gaita simples
+                depois de algumas semanas seguindo o método.
+            </p>
 
-                    <article class="module-card" data-animate data-stagger="0">
-                        <div class="module-media">
-                            <img src="assets/Thumb curso3.png" alt="Aulas sobre fôlego e embocadura" class="module-img">
-                        </div>
-                        <div class="module-content">
-                            <span class="module-tag">Módulo 01</span>
-                            <h3>Fôlego e Som Limpo</h3>
-                            <p>Aprenda a respirar do jeito certo e produzir notas limpas desde o começo, sem som vazando e sem cansar rápido.</p>
-                            <ul class="check-list">
-                                <li>Som bonito e limpo desde as primeiras aulas</li>
-                                <li>Notas sustentadas com segurança</li>
-                                <li>Evolução perceptível desde o início</li>
-                            </ul>
-                        </div>
-                    </article>
-
-                    <article class="module-card module-card--reverse" data-animate data-stagger="1">
-                        <div class="module-media">
-                            <img src="assets/Thumb curso4.png" alt="Domínio das regiões da gaita" class="module-img">
-                        </div>
-                        <div class="module-content">
-                            <span class="module-tag">Módulo 02</span>
-                            <h3>Domínio Total do Instrumento</h3>
-                            <p>Você aprende a se localizar na gaita e usar todas as regiões sem se perder ou travar.</p>
-                            <ul class="check-list">
-                                <li>Localização de todas as notas</li>
-                                <li>Navegação segura entre regiões</li>
-                                <li>Músicas completas sem confusão</li>
-                            </ul>
-                        </div>
-                    </article>
-
-                    <article class="module-card" data-animate data-stagger="2">
-                        <div class="module-media">
-                            <img src="assets/Thumb curso2.png" alt="Método direto e prático" class="module-img">
-                        </div>
-                        <div class="module-content">
-                            <span class="module-tag">Módulo 03</span>
-                            <h3>Método Direto ao Ponto</h3>
-                            <p>Aulas curtas e práticas feitas para quem tem pouco tempo e quer evolução real, semana após semana.</p>
-                            <ul class="check-list">
-                                <li>Sem teoria complicada</li>
-                                <li>Funciona mesmo com rotina corrida</li>
-                                <li>Progresso constante e motivador</li>
-                            </ul>
-                        </div>
-                    </article>
-
-                </div>
+            <div class="player reveal" id="player">
+                <button class="player__btn" id="player-btn" type="button" aria-label="Tocar prévia">
+                    <svg class="player__icon player__icon--play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+                    <svg class="player__icon player__icon--pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.2v14H7zM13.8 5H17v14h-3.2z"/></svg>
+                </button>
+                <div class="player__wave" id="player-wave" aria-hidden="true"></div>
+                <span class="player__time" id="player-time">0:00</span>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ── BIO ── -->
-        <section class="bio-section" data-animate>
-            <div class="section-inner">
-                <div class="bio-grid">
-                    <div class="bio-portrait-wrap">
-                        <img src="assets/profile pic .jpg" alt="Guilherme Barros, professor de gaita diatônica" class="bio-portrait-img">
-                        <div class="bio-portrait-ring" aria-hidden="true"></div>
+    <!-- ══════════ 5. MÓDULOS ══════════ -->
+    <section class="section section--trilha has-bg" id="trilha">
+        <div class="section-bg section-bg--vagoes" aria-hidden="true"></div>
+        <div class="shell">
+            <p class="eyebrow reveal">A trilha</p>
+            <h2 class="section__title reveal">
+                Três etapas até<br>você tocar <span class="ink-gold">de verdade</span>
+            </h2>
+            <p class="prose reveal">
+                Nada de módulos infinitos que você nunca termina. O método tem uma ordem, e cada etapa
+                só existe porque a seguinte depende dela.
+            </p>
+
+            <div class="trail">
+                <span class="trail__rope" aria-hidden="true"></span>
+
+                <article class="card reveal" style="--d:0ms">
+                    <figure class="tintype">
+                        <img src="assets/etapa-folego.jpg" alt="Guilherme tocando gaita de olhos fechados contra o céu, trabalhando fôlego e embocadura" width="820" height="1230" loading="lazy" decoding="async">
+                        <span class="tintype__corner tintype__corner--tl" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--tr" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--bl" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--br" aria-hidden="true"></span>
+                    </figure>
+                    <div class="card__body">
+                        <span class="card__tag">Etapa 01</span>
+                        <h3 class="card__title">Fôlego e som limpo</h3>
+                        <p>Respirar do jeito certo e tirar notas limpas desde a primeira semana — sem ar vazando pelos lados e sem cansar em dois minutos.</p>
+                        <ul class="checks">
+                            <li>Som bonito já nas primeiras aulas</li>
+                            <li>Notas sustentadas com segurança</li>
+                            <li>Evolução que dá pra ouvir</li>
+                        </ul>
                     </div>
-                    <div class="bio-content">
-                        <p class="section-label">Seu mentor</p>
-                        <h2>Guilherme Barros</h2>
-                        <p>Harmonicista profissional formado pela Escola de Música de Brasília e pelo Clube do Choro. Já ajudou dezenas de alunos a descobrirem sua própria voz através da gaita.</p>
-                        <p>Como desenvolvedor de software, aplicou lógica e organização estruturada para criar o método <strong>GuidaGaita</strong> — um caminho descomplicado, prático e didático para aprender harmônica diatônica.</p>
-                        <a href="#pricing" class="cta-text">Ver o método completo →</a>
+                </article>
+
+                <article class="card reveal" style="--d:70ms">
+                    <figure class="tintype">
+                        <img src="assets/etapa-dominio.jpg" alt="Guilherme observando a gaita nas mãos, estudando a disposição das notas" width="820" height="1230" loading="lazy" decoding="async">
+                        <span class="tintype__corner tintype__corner--tl" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--tr" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--bl" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--br" aria-hidden="true"></span>
+                    </figure>
+                    <div class="card__body">
+                        <span class="card__tag">Etapa 02</span>
+                        <h3 class="card__title">Domínio do instrumento</h3>
+                        <p>Você aprende a se localizar na gaita e a circular pelas regiões grave, média e aguda sem travar no meio da música.</p>
+                        <ul class="checks">
+                            <li>Todas as notas mapeadas</li>
+                            <li>Transições entre regiões</li>
+                            <li>Músicas inteiras, do início ao fim</li>
+                        </ul>
                     </div>
-                </div>
+                </article>
+
+                <article class="card reveal" style="--d:140ms">
+                    <figure class="tintype">
+                        <img src="assets/etapa-estrada.jpg" alt="Guilherme sentado no alto de um vagão de carga tocando gaita, com o céu ao fundo" width="820" height="1230" loading="lazy" decoding="async">
+                        <span class="tintype__corner tintype__corner--tl" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--tr" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--bl" aria-hidden="true"></span>
+                        <span class="tintype__corner tintype__corner--br" aria-hidden="true"></span>
+                    </figure>
+                    <div class="card__body">
+                        <span class="card__tag">Etapa 03</span>
+                        <h3 class="card__title">Repertório e estrada</h3>
+                        <p>Aulas curtas e músicas de verdade para quem tem pouco tempo. Você monta um repertório e ganha o que mais falta: motivo pra continuar.</p>
+                        <ul class="checks">
+                            <li>Músicas cativantes desde cedo</li>
+                            <li>Encaixa em rotina corrida</li>
+                            <li>Progresso constante</li>
+                        </ul>
+                    </div>
+                </article>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ── FAQ ── -->
-        <section class="faq">
-            <div class="section-inner">
-                <p class="section-label">Dúvidas</p>
-                <h2 data-animate>Perguntas frequentes</h2>
-                <div class="faq-list" data-animate>
-                    <details class="faq-item">
-                        <summary>O que eu recebo ao me inscrever?</summary>
-                        <div class="faq-body">
-                            <p>Acesso imediato a mais de 70 videoaulas divididas em 5 módulos estratégicos: Respiração, Embocadura de Bico e o domínio completo das regiões Média, Aguda e Grave.</p>
-                        </div>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Preciso ter uma gaita antes de começar?</summary>
-                        <div class="faq-body">
-                            <p>Não precisa. Nas primeiras aulas mostramos quais são os modelos mais acessíveis e como escolher a gaita ideal para o seu início.</p>
-                        </div>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Quanto tempo por dia eu preciso estudar?</summary>
-                        <div class="faq-body">
-                            <p>Com 10 a 15 minutos diários você já terá uma evolução constante. As aulas foram feitas para caber na rotina mais corrida.</p>
-                        </div>
-                    </details>
-                    <details class="faq-item">
-                        <summary>O curso serve para quem nunca tocou nada?</summary>
-                        <div class="faq-body">
-                            <p>Sim. Começamos do zero absoluto, ensinando desde como segurar o instrumento até a execução de músicas completas de forma progressiva.</p>
-                        </div>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Por quanto tempo terei acesso?</summary>
-                        <div class="faq-body">
-                            <p>O acesso é vitalício. Você pode ver e rever as aulas quantas vezes quiser e aproveitar todas as atualizações futuras sem nenhum custo extra.</p>
-                        </div>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Terei suporte para tirar dúvidas?</summary>
-                        <div class="faq-body">
-                            <p>Sim. Você terá acesso a uma comunidade exclusiva de alunos para feedbacks e suporte direto com o professor para acelerar seu aprendizado.</p>
-                        </div>
-                    </details>
-                </div>
+    <!-- ══════════ 6. DEPOIMENTOS ══════════ -->
+    <!--
+        ⚠ SUBSTITUA OS TRÊS CARTÕES ABAIXO PELOS DEPOIMENTOS REAIS DOS SEUS ALUNOS.
+        Enquanto tiverem a classe "quote--vazio", eles aparecem marcados como
+        pendentes — NÃO publique a página assim.
+
+        Modelo de um depoimento pronto (copie, cole e preencha):
+
+        <figure class="quote reveal">
+            <blockquote><p>Texto exato do que o aluno escreveu.</p></blockquote>
+            <figcaption class="quote__who">
+                <img class="quote__face" src="assets/aluno-nome.jpg" alt="" width="48" height="48" loading="lazy">
+                <span>
+                    <strong>Nome do aluno</strong>
+                    <small>Cidade · tempo de curso</small>
+                </span>
+            </figcaption>
+        </figure>
+    -->
+    <section class="section section--vozes has-bg" id="depoimentos">
+        <div class="section-bg section-bg--trem" aria-hidden="true"></div>
+        <div class="shell">
+            <p class="eyebrow reveal">Prova</p>
+            <h2 class="section__title reveal">Quem já<br>pegou a estrada</h2>
+
+            <div class="quotes">
+                <figure class="quote quote--vazio reveal" style="--d:0ms">
+                    <span class="quote__flag">⚠ Preencher</span>
+                    <blockquote><p>Espaço reservado para o depoimento real de um aluno.</p></blockquote>
+                    <figcaption class="quote__who"><span><strong>Nome do aluno</strong><small>Cidade · tempo de curso</small></span></figcaption>
+                </figure>
+
+                <figure class="quote quote--vazio reveal" style="--d:60ms">
+                    <span class="quote__flag">⚠ Preencher</span>
+                    <blockquote><p>Espaço reservado para o depoimento real de um aluno.</p></blockquote>
+                    <figcaption class="quote__who"><span><strong>Nome do aluno</strong><small>Cidade · tempo de curso</small></span></figcaption>
+                </figure>
+
+                <figure class="quote quote--vazio reveal" style="--d:120ms">
+                    <span class="quote__flag">⚠ Preencher</span>
+                    <blockquote><p>Espaço reservado para o depoimento real de um aluno.</p></blockquote>
+                    <figcaption class="quote__who"><span><strong>Nome do aluno</strong><small>Cidade · tempo de curso</small></span></figcaption>
+                </figure>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ── PRICING ── -->
-        <section class="pricing" id="pricing">
-            <div class="section-inner">
-                <p class="section-label">Investimento</p>
-                <h2 data-animate>Comece sua jornada <span class="highlight-gold">hoje</span></h2>
-                <div class="pricing-card" data-animate>
-                    <div class="pricing-header">
-                        <div class="pricing-badges">
-                            <span class="pricing-badge">Acesso completo</span>
-                            <span class="pricing-badge pricing-badge--discount">50% OFF</span>
-                        </div>
-                        <h3>Método GuidaGaita Completo + Comunidade VIP</h3>
-                    </div>
-                    <div class="price-original">
-                        <span class="price-original-label">De</span>
-                        <span class="price-original-value">R$ 297</span>
-                        <span class="price-original-label">por apenas</span>
-                    </div>
-                    <div class="price-block">
-                        <div class="price-installment">
-                            <span class="price-small">12x de</span>
-                            <span class="price-main">R$ 15<span class="price-cents">,11</span></span>
-                        </div>
-                        <div class="price-divider" aria-hidden="true">ou</div>
-                        <div class="price-lump">
-                            <span class="price-lump-label">à vista</span>
-                            <span class="price-lump-value">R$ 147</span>
-                        </div>
-                    </div>
-                    <p class="price-savings">Você economiza R$ 150 — desconto de 50%</p>
-                    <ul class="pricing-features">
-                        <li>Curso completo de gaita diatônica</li>
-                        <li>70+ aulas exclusivas e diretas</li>
-                        <li>Repertório com músicas cativantes</li>
-                        <li>Método prático para encaixar na rotina</li>
-                        <li>Área de membros premium</li>
-                        <li>Comunidade exclusiva de alunos</li>
-                        <li>Suporte direto com o professor</li>
+    <!-- ══════════ 7. MENTOR ══════════ -->
+    <section class="section section--mentor has-bg" id="mentor">
+        <div class="section-bg section-bg--vagoes section-bg--alto" aria-hidden="true"></div>
+        <div class="shell">
+            <div class="mentor">
+                <div class="mentor__figure reveal">
+                    <figure class="tintype tintype--round" data-parallax="0.05">
+                        <img src="assets/mentor.jpg" alt="Retrato de Guilherme Barros segurando duas gaitas" width="560" height="764" loading="lazy" decoding="async">
+                    </figure>
+                </div>
+                <div class="mentor__body reveal" style="--d:70ms">
+                    <p class="eyebrow">Quem te guia</p>
+                    <h2 class="section__title section__title--sm">Guilherme Barros</h2>
+                    <p>Harmonicista profissional formado pela <strong>Escola de Música de Brasília</strong> e pelo <strong>Clube do Choro</strong>. Já ajudou dezenas de alunos a encontrar a própria voz na gaita.</p>
+                    <p>Também desenvolvedor de software, usou a mesma lógica que aplica em sistemas para desmontar o aprendizado da harmônica em passos pequenos e testáveis. Foi assim que nasceu o <strong>GuidaGaita</strong>.</p>
+                    <ul class="creds">
+                        <li>Escola de Música de Brasília</li>
+                        <li>Clube do Choro</li>
+                        <li>Harmônica diatônica</li>
                     </ul>
-                    <a class="cta" href="https://payfast.greenn.com.br/143922/offer/D69CXd" target="_blank" rel="noopener noreferrer">Garantir minha vaga com desconto</a>
-                    <p class="pricing-scarcity">Promoção por tempo limitado</p>
-                    <p class="pricing-footnote">Compra segura. Acesso imediato após confirmação.</p>
+                    <a href="#oferta" class="btn btn--link">Ver o método completo</a>
                 </div>
             </div>
-        </section>
-
-    </main>
-
-    <footer class="footer">
-        <div class="section-inner">
-            <p>© 2026 GuidaGaita. Todos os direitos reservados.</p>
-            <nav class="footer-nav" aria-label="Links legais">
-                <a href="#">Política de Privacidade</a>
-                <a href="#">Termos de Uso</a>
-            </nav>
         </div>
-    </footer>
+    </section>
 
-    <script src="scripts.js"></script>
+    <!-- ══════════ 8. OFERTA ══════════ -->
+    <section class="section section--oferta has-bg" id="oferta">
+        <div class="section-bg section-bg--encarando" aria-hidden="true"></div>
+        <div class="shell">
+            <p class="eyebrow eyebrow--center reveal">O acordo</p>
+            <h2 class="section__title section__title--center reveal">
+                Tudo que vem<br><span class="ink-gold">na sacola</span>
+            </h2>
+
+            <div class="offer reveal">
+                <span class="offer__ribbon" aria-hidden="true"></span>
+
+                <header class="offer__head">
+                    <h3 class="offer__name">Método GuidaGaita completo<br>+ Comunidade de alunos</h3>
+                </header>
+
+                <!--
+                    ══ BLOCO DE OFERTA — DESATIVADO ══
+                    Você pediu para deixar sem oferta até confirmar o prazo real.
+                    Quando confirmar, remova os comentários abaixo e ajuste os valores.
+                    Só volte a exibir "50% OFF" se o preço cheio de R$ 297 for
+                    de fato o preço praticado fora da promoção.
+
+                    <p class="offer__anchor">
+                        <span>De</span>
+                        <s>R$ 297</s>
+                        <span>por apenas</span>
+                    </p>
+                -->
+
+                <div class="offer__price">
+                    <div class="offer__parcel">
+                        <span class="offer__small">12x de</span>
+                        <span class="offer__big">R$ 15<sup>,11</sup></span>
+                    </div>
+                    <span class="offer__or">ou</span>
+                    <div class="offer__cash">
+                        <span class="offer__small">à vista</span>
+                        <span class="offer__cash-value">R$ 147</span>
+                    </div>
+                </div>
+
+                <ul class="checks checks--gold offer__list">
+                    <li>Curso completo de gaita diatônica</li>
+                    <li>Mais de 100 aulas diretas ao ponto</li>
+                    <li>Repertório com músicas cativantes</li>
+                    <li>Método pensado para rotina corrida</li>
+                    <li>Área de membros premium</li>
+                    <li>Comunidade exclusiva de alunos</li>
+                    <li>Suporte direto com o professor</li>
+                    <li>Acesso vitalício, com atualizações futuras</li>
+                </ul>
+
+                <a class="btn btn--solid btn--block"
+                   href="https://payfast.greenn.com.br/143922/offer/D69CXd"
+                   target="_blank" rel="noopener noreferrer">
+                    Garantir meu acesso vitalício
+                </a>
+
+                <p class="offer__note">Compra segura · Acesso imediato após a confirmação</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ 9. GARANTIA ══════════ -->
+    <section class="section section--garantia has-bg">
+        <div class="section-bg section-bg--trem section-bg--alto" aria-hidden="true"></div>
+        <div class="shell">
+            <div class="warranty reveal">
+                <div class="warranty__seal" aria-hidden="true">
+                    <svg viewBox="0 0 100 100" fill="none">
+                        <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 4" opacity=".55"/>
+                        <circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="2"/>
+                        <text x="50" y="45" text-anchor="middle" class="warranty__seal-num">7</text>
+                        <text x="50" y="63" text-anchor="middle" class="warranty__seal-word">DIAS</text>
+                    </svg>
+                </div>
+                <div class="warranty__body">
+                    <p class="eyebrow">Aperto de mão</p>
+                    <h2 class="section__title section__title--sm">O risco é meu, não seu</h2>
+                    <p>Entre, assista às aulas, teste o método na sua gaita. Se em <strong>7 dias</strong> você achar que não é pra você, devolvo cada centavo — sem perguntas e sem burocracia.</p>
+                    <p class="warranty__fine">Garantia incondicional de 7 dias, conforme o Código de Defesa do Consumidor.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ 10. FAQ ══════════ -->
+    <section class="section section--faq has-bg" id="faq">
+        <div class="section-bg section-bg--trem" aria-hidden="true"></div>
+        <div class="shell">
+            <p class="eyebrow reveal">Antes de sacar</p>
+            <h2 class="section__title reveal">Perguntas frequentes</h2>
+
+            <div class="faq reveal">
+                <details class="faq__item">
+                    <summary>O que exatamente eu recebo ao me inscrever?</summary>
+                    <div class="faq__body">
+                        <p>Acesso imediato a mais de 100 videoaulas organizadas em módulos que seguem uma ordem clara: respiração, embocadura de bico e o domínio completo das regiões grave, média e aguda. Junto vêm a comunidade de alunos e o suporte direto comigo.</p>
+                    </div>
+                </details>
+
+                <details class="faq__item">
+                    <summary>Preciso ter uma gaita antes de começar?</summary>
+                    <div class="faq__body">
+                        <p>Não. Nas primeiras aulas eu mostro quais modelos são mais acessíveis, o que evitar na hora da compra e como escolher a gaita certa para começar sem gastar demais.</p>
+                    </div>
+                </details>
+
+                <details class="faq__item">
+                    <summary>Quanto tempo por dia eu preciso estudar?</summary>
+                    <div class="faq__body">
+                        <p>De 10 a 15 minutos por dia já garantem evolução constante. As aulas são curtas de propósito, feitas para caber na rotina de quem trabalha o dia inteiro.</p>
+                    </div>
+                </details>
+
+                <details class="faq__item">
+                    <summary>Serve para quem nunca tocou nenhum instrumento?</summary>
+                    <div class="faq__body">
+                        <p>Serve, e é justamente pra quem o método foi desenhado. Começamos do zero absoluto — como segurar a gaita, como respirar — e chegamos a músicas completas, um passo de cada vez.</p>
+                    </div>
+                </details>
+
+                <details class="faq__item">
+                    <summary>Por quanto tempo terei acesso?</summary>
+                    <div class="faq__body">
+                        <p>O acesso é vitalício. Você assiste e revê quantas vezes quiser, e recebe todas as atualizações futuras do curso sem pagar nada a mais.</p>
+                    </div>
+                </details>
+
+                <details class="faq__item">
+                    <summary>E se eu não gostar?</summary>
+                    <div class="faq__body">
+                        <p>Você tem 7 dias para pedir o reembolso integral. Basta me mandar uma mensagem — sem justificativa e sem burocracia.</p>
+                    </div>
+                </details>
+
+                <details class="faq__item">
+                    <summary>Terei alguém para tirar dúvidas?</summary>
+                    <div class="faq__body">
+                        <p>Sim. Você entra numa comunidade exclusiva de alunos e tem suporte direto comigo para destravar o que estiver travando, que é o que mais acelera o aprendizado.</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════ 11. CHAMADA FINAL ══════════ -->
+    <section class="section section--final has-bg">
+        <div class="section-bg section-bg--duelo" aria-hidden="true"></div>
+        <div class="shell final__inner">
+            <p class="eyebrow eyebrow--center reveal">
+                <span class="eyebrow__star" aria-hidden="true">★</span>
+                Última parada
+                <span class="eyebrow__star" aria-hidden="true">★</span>
+            </p>
+            <h2 class="final__title reveal">
+                A gaita já está<br>na sua mão.
+            </h2>
+            <p class="prose prose--center reveal">
+                O que separa você da primeira música não é talento, nem tempo, nem dinheiro.
+                É só a decisão de começar hoje em vez de semana que vem.
+            </p>
+            <div class="reveal">
+                <a class="btn btn--solid btn--lg"
+                   href="https://payfast.greenn.com.br/143922/offer/D69CXd"
+                   target="_blank" rel="noopener noreferrer">
+                    Quero começar agora
+                </a>
+            </div>
+            <p class="final__mini reveal">Acesso vitalício · Garantia de 7 dias · Compra segura</p>
+        </div>
+    </section>
+
+</main>
+
+<footer class="site-footer has-bg">
+    <div class="section-bg section-bg--trem section-bg--alto" aria-hidden="true"></div>
+    <div class="shell site-footer__inner">
+        <a href="#top" class="brand brand--footer">
+            <span class="brand__mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="8" width="20" height="8" rx="1.5"/>
+                    <path d="M5 11.5v1M8 11.5v1M11 11.5v1M14 11.5v1M17 11.5v1M19.5 11.5v1"/>
+                </svg>
+            </span>
+            <span class="brand__name">GuidaGaita</span>
+        </a>
+        <p class="site-footer__copy">© 2026 GuidaGaita. Todos os direitos reservados.</p>
+        <nav class="site-footer__nav" aria-label="Links legais">
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Termos de Uso</a>
+        </nav>
+    </div>
+</footer>
+
+<script src="scripts.js" defer></script>
 </body>
 </html>
