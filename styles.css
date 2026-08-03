@@ -23,11 +23,11 @@ ul, ol { list-style: none; }
 /* ── TOKENS ──────────────────────────────────────────────── */
 :root {
     /* Terra */
-    --void:       #0A0705;
-    --dust:       #120D09;
-    --leather:    #1B1310;
-    --leather-2:  #251A14;
-    --hide:       #33241B;
+    --void:       #1A130B;
+    --dust:       #241B12;
+    --leather:    #362A1D;
+    --leather-2:  #453321;
+    --hide:       #5A4430;
 
     /* Fogo */
     --ember:      #E2622C;
@@ -112,7 +112,7 @@ body {
     inset: 0;
     z-index: 290;
     pointer-events: none;
-    background: radial-gradient(ellipse 78% 68% at 50% 45%, transparent 42%, rgba(6, 4, 3, .58) 100%);
+    background: radial-gradient(ellipse 78% 68% at 50% 45%, transparent 42%, rgba(22, 15, 9, .4) 100%);
 }
 
 /* ── LAYOUT ──────────────────────────────────────────────── */
@@ -148,6 +148,10 @@ body {
     background-position: center;
     filter: sepia(.42) saturate(1.06) contrast(1.05) brightness(.62);
     opacity: var(--bg-op, .4);
+    /* Some seções (FAQ) travam esta altura via JS para o acordeão não
+       recortar a foto de novo a cada clique; a transição só entra em
+       ação nos raros recálculos por resize, não no toggle em si. */
+    transition: height .3s var(--ease);
 }
 
 .has-bg::after {
@@ -158,8 +162,8 @@ body {
     pointer-events: none;
     background: linear-gradient(to bottom,
         var(--void) 1%,
-        rgba(10, 7, 5, var(--veu, .72)) 24%,
-        rgba(10, 7, 5, var(--veu, .72)) 76%,
+        rgba(26, 19, 11, var(--veu, .72)) 24%,
+        rgba(26, 19, 11, var(--veu, .72)) 76%,
         var(--void) 99%);
 }
 
@@ -417,7 +421,7 @@ strong { color: var(--bone); font-weight: 600; }
     inset: 0 0 auto;
     z-index: 200;
     padding-block: .8rem;
-    background: rgba(10, 7, 5, .78);
+    background: rgba(26, 19, 11, .78);
     backdrop-filter: blur(16px) saturate(1.3);
     -webkit-backdrop-filter: blur(16px) saturate(1.3);
     border-bottom: 1px solid transparent;
@@ -474,7 +478,7 @@ strong { color: var(--bone); font-weight: 600; }
     inset: auto 0 0;
     z-index: 210;
     padding: .8rem var(--gut) calc(.8rem + env(safe-area-inset-bottom, 0px));
-    background: linear-gradient(to top, rgba(8, 5, 4, .97) 60%, rgba(8, 5, 4, .82));
+    background: linear-gradient(to top, rgba(22, 16, 10, .97) 60%, rgba(22, 16, 10, .82));
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
@@ -500,7 +504,7 @@ strong { color: var(--bone); font-weight: 600; }
     position: relative;
     padding: 9px;
     background:
-        linear-gradient(150deg, var(--leather-2), var(--leather) 55%, #14100C);
+        linear-gradient(150deg, var(--leather-2), var(--leather) 55%, #271D14);
     border: 1px solid rgba(224, 168, 62, .2);
     border-radius: 4px;
     box-shadow:
@@ -608,9 +612,9 @@ strong { color: var(--bone); font-weight: 600; }
     pointer-events: none;
     background:
         linear-gradient(to bottom,
-            rgba(10, 7, 5, .14) 0%,
-            rgba(10, 7, 5, .28) 26%,
-            rgba(10, 7, 5, .78) 44%,
+            rgba(26, 19, 11, .14) 0%,
+            rgba(26, 19, 11, .28) 26%,
+            rgba(26, 19, 11, .78) 44%,
             var(--void) 62%),
         linear-gradient(to top, rgba(226, 98, 44, .11), transparent 48%);
 }
@@ -799,7 +803,7 @@ strong { color: var(--bone); font-weight: 600; }
 .pain {
     position: relative;
     padding: 1.7rem 1.5rem 1.6rem;
-    background: linear-gradient(165deg, rgba(37, 26, 20, .62), rgba(18, 13, 9, .5));
+    background: linear-gradient(165deg, rgba(69, 51, 33, .62), rgba(36, 27, 18, .5));
     border: 1px solid var(--line);
     border-radius: 6px;
     overflow: hidden;
@@ -821,7 +825,7 @@ strong { color: var(--bone); font-weight: 600; }
 .pain:hover {
     transform: translateY(-4px);
     border-color: var(--line-warm);
-    background: linear-gradient(165deg, rgba(51, 36, 27, .7), rgba(18, 13, 9, .5));
+    background: linear-gradient(165deg, rgba(90, 68, 48, .7), rgba(36, 27, 18, .5));
 }
 
 .pain:hover::before { transform: scaleX(1); }
@@ -887,7 +891,7 @@ strong { color: var(--bone); font-weight: 600; }
     max-width: 540px;
     margin-top: 2.5rem;
     padding: .95rem 1.3rem .95rem .95rem;
-    background: linear-gradient(150deg, rgba(37, 26, 20, .92), rgba(18, 13, 9, .92));
+    background: linear-gradient(150deg, rgba(69, 51, 33, .92), rgba(36, 27, 18, .92));
     border: 1px solid var(--line-warm);
     border-radius: 60px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, .6), 0 1px 0 rgba(224, 168, 62, .1) inset;
@@ -972,7 +976,7 @@ strong { color: var(--bone); font-weight: 600; }
     flex-direction: column;
     gap: 1.3rem;
     padding: 1.5rem;
-    background: linear-gradient(168deg, rgba(37, 26, 20, .55), rgba(18, 13, 9, .45));
+    background: linear-gradient(168deg, rgba(69, 51, 33, .55), rgba(36, 27, 18, .45));
     border: 1px solid var(--line);
     border-radius: 8px;
     transition: transform .5s var(--ease), border-color .4s, box-shadow .5s var(--ease);
@@ -1046,7 +1050,7 @@ strong { color: var(--bone); font-weight: 600; }
 .quote {
     position: relative;
     padding: 1.9rem 1.6rem 1.5rem;
-    background: linear-gradient(168deg, rgba(37, 26, 20, .55), rgba(18, 13, 9, .45));
+    background: linear-gradient(168deg, rgba(69, 51, 33, .55), rgba(36, 27, 18, .45));
     border: 1px solid var(--line);
     border-radius: 8px;
     transition: transform .45s var(--ease), border-color .35s;
@@ -1133,7 +1137,7 @@ strong { color: var(--bone); font-weight: 600; }
     gap: 2.2rem;
     align-items: center;
     padding: 2.2rem 1.5rem;
-    background: linear-gradient(160deg, rgba(37, 26, 20, .5), rgba(18, 13, 9, .38));
+    background: linear-gradient(160deg, rgba(69, 51, 33, .5), rgba(36, 27, 18, .38));
     border: 1px solid var(--line);
     border-radius: 10px;
 }
@@ -1171,7 +1175,7 @@ strong { color: var(--bone); font-weight: 600; }
     max-width: 500px;
     margin-top: 1.5rem;
     padding: 2.1rem 1.6rem 1.9rem;
-    background: linear-gradient(168deg, var(--leather-2), var(--leather) 60%, #14100C);
+    background: linear-gradient(168deg, var(--leather-2), var(--leather) 60%, #271D14);
     border: 1px solid rgba(224, 168, 62, .28);
     border-radius: 10px;
     box-shadow:
@@ -1298,7 +1302,7 @@ strong { color: var(--bone); font-weight: 600; }
     max-width: 780px;
     margin-inline: auto;
     padding: 2.4rem 1.6rem;
-    background: linear-gradient(160deg, rgba(226, 98, 44, .07), rgba(18, 13, 9, .4));
+    background: linear-gradient(160deg, rgba(226, 98, 44, .07), rgba(36, 27, 18, .4));
     border: 1px solid var(--line-warm);
     border-radius: 10px;
 }
@@ -1423,8 +1427,8 @@ strong { color: var(--bone); font-weight: 600; }
         radial-gradient(ellipse 70% 60% at 50% 50%, rgba(226, 98, 44, .13), transparent 70%),
         linear-gradient(to bottom,
             var(--void) 1%,
-            rgba(10, 7, 5, var(--veu)) 24%,
-            rgba(10, 7, 5, var(--veu)) 76%,
+            rgba(26, 19, 11, var(--veu)) 24%,
+            rgba(26, 19, 11, var(--veu)) 76%,
             var(--void) 99%);
 }
 
@@ -1457,7 +1461,7 @@ strong { color: var(--bone); font-weight: 600; }
 .site-footer {
     padding-block: 2.6rem;
     border-top: 1px solid var(--line);
-    background: rgba(8, 5, 4, .5);
+    background: rgba(22, 16, 10, .5);
 }
 
 .site-footer__inner {
@@ -1495,6 +1499,140 @@ strong { color: var(--bone); font-weight: 600; }
     opacity: 1;
     transform: none;
     will-change: auto;
+}
+
+/* ═══════════ CENTRALIZAÇÃO — PROBLEMA E FAQ (todas as telas) ═
+   Diferente do bloco de mobile abaixo, este vale em qualquer
+   largura: estas duas seções ficam centralizadas também no
+   tablet e no desktop, igual à oferta e à chamada final. As
+   demais seções (trilha, depoimentos, mentor) não são tocadas
+   aqui — continuam alinhadas à esquerda a partir do tablet.
+
+   O texto das respostas do FAQ (`.faq__body p`) fica de fora de
+   propósito: são parágrafos de leitura mais longos, e centralizar
+   várias linhas de texto corrido prejudica a leitura.
+   ─────────────────────────────────────────────────────────── */
+.section--problema .eyebrow,
+.section--faq .eyebrow {
+    justify-content: center;
+}
+
+.section--problema .section__title,
+.section--faq .section__title {
+    text-align: center;
+    margin-inline: auto;
+}
+
+.section--problema .prose {
+    text-align: center;
+    margin-inline: auto;
+}
+
+.section--problema .pain {
+    text-align: center;
+}
+
+.section--problema .turn {
+    text-align: center;
+    margin-inline: auto;
+}
+
+.section--faq .faq {
+    margin-inline: auto;
+}
+
+.section--faq .faq__item summary {
+    justify-content: center;
+    text-align: center;
+    gap: .75rem;
+}
+
+/* ═══════════ CENTRALIZAÇÃO — SÓ MOBILE (até 619px) ═══════════
+   Textos e blocos migram para o centro da tela no celular. A partir
+   do tablet (620px+) os overrides abaixo simplesmente não se aplicam
+   e o layout volta ao alinhamento à esquerda já definido nas seções
+   TABLET/DESKTOP mais abaixo — nada muda para telas maiores.
+
+   Listas com marca (checklists) ficam de fora de propósito: o texto
+   de cada item é ancorado ao próprio ícone de check à esquerda, e
+   centralizar o texto desalinharia visualmente marca e frase.
+   ─────────────────────────────────────────────────────────── */
+@media (max-width: 619.98px) {
+    .eyebrow { justify-content: center; }
+
+    .section__title,
+    .prose,
+    .pain,
+    .turn p,
+    .card__tag,
+    .card__title,
+    .card__body > p,
+    .quote blockquote p,
+    .mentor__body > p,
+    .offer__name {
+        text-align: center;
+    }
+
+    .prose,
+    .turn { margin-inline: auto; }
+
+    .hero__copy {
+        align-items: center;
+        text-align: center;
+    }
+
+    .hero__actions { justify-content: center; }
+
+    .card__body { align-items: center; }
+
+    .quote {
+        text-align: center;
+    }
+
+    .quote::before {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .quote__who {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .mentor__body {
+        align-items: center;
+    }
+
+    .creds { justify-content: center; }
+
+    .offer__head,
+    .offer__price {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .faq__item summary {
+        justify-content: center;
+        text-align: center;
+        gap: .75rem;
+    }
+
+    /* Espaçamento vertical pela metade: o ritmo base foi pensado para
+       telas largas, e no celular o vão entre seções e entre blocos
+       ficava exagerado. */
+    :root { --rhythm: clamp(2.5rem, 5.5vw, 4.25rem); }
+
+    .section--final { padding-block: clamp(2.75rem, 6.5vw, 4.75rem); }
+
+    .pains  { margin-block: 1.3rem; }
+    .turn   { margin-block: 1.3rem; }
+    .player { margin-top: 1.25rem; }
+    .trail  { margin-top: 1.5rem; }
+    .quotes { margin-top: 1.4rem; }
+    .offer  { margin-top: .75rem; }
+    .faq    { margin-top: 1.2rem; }
+    .warranty { gap: .9rem; }
+    .mentor   { gap: 1.1rem; }
 }
 
 /* ═══════════ TABLET — 620px ═══════════ */
@@ -1561,15 +1699,15 @@ strong { color: var(--bone); font-weight: 600; }
     .hero__scrim {
         background:
             linear-gradient(100deg,
-                rgba(10, 7, 5, .92) 0%,
-                rgba(10, 7, 5, .74) 30%,
-                rgba(10, 7, 5, .34) 52%,
-                rgba(10, 7, 5, .22) 72%,
-                rgba(10, 7, 5, .5) 100%),
+                rgba(26, 19, 11, .92) 0%,
+                rgba(26, 19, 11, .74) 30%,
+                rgba(26, 19, 11, .34) 52%,
+                rgba(26, 19, 11, .22) 72%,
+                rgba(26, 19, 11, .5) 100%),
             linear-gradient(to bottom,
-                rgba(10, 7, 5, .5) 0%,
+                rgba(26, 19, 11, .5) 0%,
                 transparent 26%,
-                rgba(10, 7, 5, .45) 78%,
+                rgba(26, 19, 11, .45) 78%,
                 var(--void) 99%);
     }
 

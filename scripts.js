@@ -278,18 +278,50 @@ function setupTicker() {
     track.innerHTML = track.innerHTML + track.innerHTML;
 }
 
-/* ── FAQ: um aberto de cada vez ──────────────────────────── */
+/* ── FAQ: um aberto de cada vez + foto de fundo travada ──────
+   A foto da seção é `position:absolute; inset:0` dentro da seção,
+   então seu recorte (`background-size:cover`) é recalculado toda
+   vez que a seção muda de altura. Como abrir uma resposta estica
+   a seção, a foto "pulava" de recorte a cada clique.
+
+   A correção: travar a altura da camada da foto no valor medido
+   com o acordeão fechado, via `style.height` inline (isso vence o
+   `inset:0` da folha de estilos, mas mantém o topo ancorado). A
+   seção continua crescendo normalmente por trás — só a foto para
+   de reagir a essa mudança.
+   ─────────────────────────────────────────────────────────── */
 function setupFAQ() {
     const items = document.querySelectorAll('.faq__item');
+    const section = document.querySelector('.section--faq');
+    const bg = section?.querySelector('.section-bg');
+
+    const algumAberto = () => section && !!section.querySelector('.faq__item[open]');
+
+    const travarAltura = () => {
+        if (!bg || algumAberto()) return;
+        bg.style.height = `${section.offsetHeight}px`;
+    };
+
+    travarAltura();
 
     items.forEach(item => {
         item.addEventListener('toggle', () => {
-            if (!item.open) return;
-            items.forEach(other => {
-                if (other !== item) other.open = false;
-            });
+            if (item.open) {
+                items.forEach(other => {
+                    if (other !== item) other.open = false;
+                });
+            }
+            // Ao fechar tudo, a seção volta à altura natural — reaproveita
+            // o momento para conferir se o valor travado ainda bate.
+            if (!algumAberto()) travarAltura();
         });
     });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(travarAltura, 200);
+    }, { passive: true });
 }
 
 /* ── Player da prévia ────────────────────────────────────────
