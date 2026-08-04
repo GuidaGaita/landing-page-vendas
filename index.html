@@ -45,7 +45,7 @@
 
 <!-- ══════════ BARRA FIXA MOBILE ══════════ -->
 <div class="dock" id="dock">
-    <a href="#oferta" class="btn btn--solid btn--dock">Começar agora — R$&nbsp;147</a>
+    <a href="#oferta" class="btn btn--solid btn--dock">Ver planos e valores</a>
 </div>
 
 <main id="top">
@@ -75,8 +75,8 @@
                 </h1>
 
                 <p class="hero__sub reveal" style="--d:100ms">
-                    Do zero à primeira música em poucas semanas, com <strong>10 minutos por dia</strong>.
-                    Sem teoria chata, sem precisar de “dom musical” — só o caminho certo, na ordem certa.
+                    Do zero à primeira música em menos de uma semana com <strong>10 minutos por dia</strong>.<br>
+                    Sem teoria chata, sem precisar de “dom musical”<br> só o caminho certo, na ordem certa.
                 </p>
 
                 <div class="hero__actions reveal" style="--d:150ms">
@@ -351,66 +351,121 @@
         </div>
     </section>
 
-    <!-- ══════════ 8. OFERTA ══════════ -->
+    <!--
+        ══════════ 8. OFERTA ══════════
+        ⚠ AINDA PENDENTE NESTA SEÇÃO — leia antes de publicar:
+
+        1. PARCELAMENTO ESTIMADO: "12x de R$ 25,39" (R$ 247) e
+           "12x de R$ 34,64" (R$ 337) foram calculados aplicando a mesma
+           taxa de juros que o parcelamento antigo já tinha (147 → 15,11 ×
+           12 = 181,32, ou seja, ~23,3% de juros no total). Confirme o
+           valor real no painel do Greenn — o parcelamento configurado lá
+           pode ser diferente desta estimativa.
+
+        2. FOTO DA GAITA BÔNUS: quando você mandar a foto, ela entra no
+           <figure class="offer__photo"> comentado dentro do card com o
+           badge "Mais completo".
+    -->
     <section class="section section--oferta has-bg" id="oferta">
         <div class="section-bg section-bg--encarando" aria-hidden="true"></div>
         <div class="shell">
             <p class="eyebrow eyebrow--center reveal">O acordo</p>
             <h2 class="section__title section__title--center reveal">
-                Tudo que vem<br><span class="ink-gold">na sacola</span>
+                Escolha o seu<br><span class="ink-gold">jeito de começar</span>
             </h2>
 
-            <div class="offer reveal">
-                <span class="offer__ribbon" aria-hidden="true"></span>
+            <div class="offers">
 
-                <header class="offer__head">
-                    <h3 class="offer__name">Método GuidaGaita completo<br>+ Comunidade de alunos</h3>
-                </header>
+                <!-- Card 1 — só o curso -->
+                <div class="offer reveal">
+                    <span class="offer__ribbon" aria-hidden="true"></span>
 
-                <!--
-                    ══ BLOCO DE OFERTA — DESATIVADO ══
-                    Você pediu para deixar sem oferta até confirmar o prazo real.
-                    Quando confirmar, remova os comentários abaixo e ajuste os valores.
-                    Só volte a exibir "50% OFF" se o preço cheio de R$ 297 for
-                    de fato o preço praticado fora da promoção.
+                    <header class="offer__head">
+                        <h3 class="offer__name">Método GuidaGaita completo<br>+ Comunidade de alunos</h3>
+                    </header>
 
-                    <p class="offer__anchor">
-                        <span>De</span>
-                        <s>R$ 297</s>
-                        <span>por apenas</span>
-                    </p>
-                -->
-
-                <div class="offer__price">
-                    <div class="offer__parcel">
-                        <span class="offer__small">12x de</span>
-                        <span class="offer__big">R$ 15<sup>,11</sup></span>
+                    <div class="offer__price">
+                        <div class="offer__parcel">
+                            <span class="offer__small">12x de</span>
+                            <span class="offer__big">R$ 25<sup>,39</sup></span>
+                        </div>
+                        <span class="offer__or">ou</span>
+                        <div class="offer__cash">
+                            <span class="offer__small">à vista</span>
+                            <span class="offer__cash-value">R$ 247</span>
+                        </div>
                     </div>
-                    <span class="offer__or">ou</span>
-                    <div class="offer__cash">
-                        <span class="offer__small">à vista</span>
-                        <span class="offer__cash-value">R$ 147</span>
-                    </div>
+
+                    <ul class="checks checks--gold offer__list">
+                        <li>Curso completo de gaita diatônica</li>
+                        <li>Mais de 100 aulas diretas ao ponto</li>
+                        <li>Repertório com músicas cativantes</li>
+                        <li>Método pensado para rotina corrida</li>
+                        <li>Área de membros premium</li>
+                        <li>Comunidade exclusiva de alunos</li>
+                        <li>Suporte direto com o professor</li>
+                        <li>Acesso vitalício, com atualizações futuras</li>
+                    </ul>
+
+                    <a class="btn btn--solid btn--block"
+                       href="https://payfast.greenn.com.br/6z65zng/offer/QyL4EC?ch_id=141822"
+                       target="_blank" rel="noopener noreferrer">
+                        Garantir meu acesso vitalício
+                    </a>
+
+                    <p class="offer__note">Compra segura · Acesso imediato após a confirmação</p>
                 </div>
 
-                <ul class="checks checks--gold offer__list">
-                    <li>Curso completo de gaita diatônica</li>
-                    <li>Mais de 100 aulas diretas ao ponto</li>
-                    <li>Repertório com músicas cativantes</li>
-                    <li>Método pensado para rotina corrida</li>
-                    <li>Área de membros premium</li>
-                    <li>Comunidade exclusiva de alunos</li>
-                    <li>Suporte direto com o professor</li>
-                    <li>Acesso vitalício, com atualizações futuras</li>
-                </ul>
+                <!-- Card 2 — curso + gaita bônus -->
+                <div class="offer offer--featured reveal" style="--d:80ms">
+                    <span class="offer__ribbon" aria-hidden="true"></span>
+                    <span class="offer__badge">Mais completo</span>
 
-                <a class="btn btn--solid btn--block"
-                   href="https://payfast.greenn.com.br/143922/offer/D69CXd"
-                   target="_blank" rel="noopener noreferrer">
-                    Garantir meu acesso vitalício
-                </a>
+                    <header class="offer__head">
+                        <h3 class="offer__name">Gaita Easttop T104S + <br>Método GuidaGaita completo<br>+Comunidade e Alunos </h3>
+                    </header>
 
-                <p class="offer__note">Compra segura · Acesso imediato após a confirmação</p>
+                    <div class="offer__photos" aria-hidden="true">
+                        <span class="offer__spin"></span>
+                        <span class="offer__glow"></span>
+                        <img class="offer__gaita offer__gaita--rosa" src="assets/gaita-rosa.png" alt="" width="780" height="780" decoding="async">
+                        <img class="offer__gaita offer__gaita--azul" src="assets/gaita-azul.png" alt="" width="780" height="780" decoding="async">
+                    </div>
+                    <p class="offer__colors">Vem na cor <strong>rosa</strong> ou <strong>azul</strong> — você escolhe</p>
+
+                    <div class="offer__price">
+                        <div class="offer__parcel">
+                            <span class="offer__small">12x de</span>
+                            <span class="offer__big">R$ 34<sup>,64</sup></span>
+                        </div>
+                        <span class="offer__or">ou</span>
+                        <div class="offer__cash">
+                            <span class="offer__small">à vista</span>
+                            <span class="offer__cash-value">R$ 337</span>
+                        </div>
+                    </div>
+
+                    <ul class="checks checks--gold offer__list">
+                        <li class="offer__bonus">Gaita diatônica bônus, enviada pra você</li>
+                        <li>Curso completo de gaita diatônica</li>
+                        <li>Mais de 100 aulas diretas ao ponto</li>
+                        <li>Repertório com músicas cativantes</li>
+                        <li>Método pensado para rotina corrida</li>
+                        <li>Área de membros premium</li>
+                        <li>Comunidade exclusiva de alunos</li>
+                        <li>Suporte direto com o professor</li>
+                        <li>Acesso vitalício, com atualizações futuras</li>
+                    </ul>
+
+                    <a class="btn btn--solid btn--block"
+                       href="https://payfast.greenn.com.br/r3k5wcq/offer/Xl6vxa?ch_id=141821"
+                       target="_blank" rel="noopener noreferrer">
+                        Quero o curso + a gaita
+                    </a>
+
+                    <p class="offer__note">Compra segura · Acesso imediato após a confirmação</p>
+                </div>
+
             </div>
         </div>
     </section>
@@ -515,9 +570,7 @@
                 É só a decisão de começar hoje em vez de semana que vem.
             </p>
             <div class="reveal">
-                <a class="btn btn--solid btn--lg"
-                   href="https://payfast.greenn.com.br/143922/offer/D69CXd"
-                   target="_blank" rel="noopener noreferrer">
+                <a class="btn btn--solid btn--lg" href="#oferta">
                     Quero começar agora
                 </a>
             </div>
