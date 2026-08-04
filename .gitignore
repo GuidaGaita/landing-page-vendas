@@ -1,0 +1,7 @@
+# O sharp usado por tools/gerar-imagens.js é uma dependência de
+# desenvolvimento, rodada à mão. O site publicado não usa nada disto —
+# e o deploy manda a raiz inteira para o GitHub Pages, então isto aqui
+# não pode entrar no repositório.
+node_modules/
+package.json
+package-lock.json
