@@ -1228,6 +1228,7 @@ strong { color: var(--bone); font-weight: 600; }
 
 /* Reserva espaço pro selo não cair por cima da primeira linha do
    título em cartões estreitos (celular) */
+.offer--featured .offer__title,
 .offer--featured .offer__name { padding-right: 6.5rem; }
 
 .offer__badge {
@@ -1372,6 +1373,19 @@ strong { color: var(--bone); font-weight: 600; }
 }
 
 .offer__colors strong { color: var(--gold-hi); }
+
+/* Rótulo curto ("Curso" / "Curso + Gaita") que identifica o cartão
+   de cara, antes da descrição completa do produto abaixo dele. */
+.offer__title {
+    font-family: var(--f-poster);
+    font-weight: 400;
+    font-size: clamp(1.35rem, 3.6vw, 1.65rem);
+    line-height: 1.1;
+    letter-spacing: -.01em;
+    color: var(--gold-hi);
+    margin-bottom: .5rem;
+    text-shadow: 0 0 22px rgba(224, 168, 62, .22);
+}
 
 .offer__name {
     font-family: var(--f-body);
@@ -1739,6 +1753,7 @@ strong { color: var(--bone); font-weight: 600; }
     .card__body > p,
     .quote blockquote p,
     .mentor__body > p,
+    .offer__title,
     .offer__name {
         text-align: center;
     }
