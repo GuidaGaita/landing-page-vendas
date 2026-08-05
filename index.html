@@ -12,13 +12,19 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="GuidaGaita — No duelo entre você e a gaita, só falta você sacar" />
     <meta property="og:description" content="Do zero à primeira música em menos de uma semana, com 10 minutos por dia. 100+ aulas, acesso vitalício e garantia de 7 dias." />
-    <meta property="og:image" content="assets/hero-duelo.jpg" />
+    <!-- Redes sociais não leem AVIF/WebP: aqui vai sempre o JPG. -->
+    <meta property="og:image" content="assets/hero-duelo-fallback.jpg" />
     <meta property="og:locale" content="pt_BR" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Outfit:wght@300;400;500;600;700;800;900&family=Rye&display=swap" rel="stylesheet">
+    <!-- Fontes hospedadas aqui mesmo, não no Google. A folha do
+         fonts.googleapis.com bloqueava a renderização e ainda obrigava
+         a um segundo salto até o fonts.gstatic.com antes de qualquer
+         letra aparecer. Os @font-face agora vivem no styles.css; estes
+         dois preload evitam que as fontes só sejam descobertas depois
+         que o CSS baixa e é interpretado. -->
+    <link rel="preload" href="assets/fonts/outfit-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/alfa-slab-one-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -53,9 +59,28 @@
     <!-- ══════════ 1. HERO ══════════ -->
     <section class="hero">
         <div class="hero__photo">
-            <img src="assets/hero-duelo.jpg"
-                 alt="Guilherme Barros apontando duas gaitas diatônicas para a câmera como se fossem revólveres, na terra vermelha ao lado de um trem de carga"
-                 width="2400" height="1600" fetchpriority="high" decoding="async">
+            <!-- Esta é a maior imagem da dobra, o elemento que define o LCP.
+                 O celular baixa a variante de 480 ou 768px (9-19KB) em vez
+                 do JPG único de 2400px e 302KB que servia todo mundo.
+                 O sizes segue o layout: full-bleed no celular, 80% da
+                 largura da tela a partir de 940px (ver .hero__photo). -->
+            <picture>
+                <source type="image/avif"
+                        sizes="(min-width: 940px) 80vw, 100vw"
+                        srcset="assets/hero-duelo-480.avif   480w,
+                                assets/hero-duelo-768.avif   768w,
+                                assets/hero-duelo-1200.avif 1200w,
+                                assets/hero-duelo-1800.avif 1800w">
+                <source type="image/webp"
+                        sizes="(min-width: 940px) 80vw, 100vw"
+                        srcset="assets/hero-duelo-480.webp   480w,
+                                assets/hero-duelo-768.webp   768w,
+                                assets/hero-duelo-1200.webp 1200w,
+                                assets/hero-duelo-1800.webp 1800w">
+                <img src="assets/hero-duelo-fallback.jpg"
+                     alt="Guilherme Barros apontando duas gaitas diatônicas para a câmera como se fossem revólveres, na terra vermelha ao lado de um trem de carga"
+                     width="2400" height="1600" fetchpriority="high" decoding="async">
+            </picture>
         </div>
         <div class="hero__scrim" aria-hidden="true"></div>
         <canvas class="hero__dust" id="dust" aria-hidden="true"></canvas>
@@ -217,7 +242,13 @@
 
                 <article class="card reveal" style="--d:0ms">
                     <figure class="tintype">
-                        <img src="assets/etapa-folego.jpg" alt="Guilherme tocando gaita de olhos fechados contra o céu, trabalhando fôlego e embocadura" width="820" height="1230" loading="lazy" decoding="async">
+                        <!-- O cartão exibe no máx. 300px de largura (.card .tintype),
+                             então 640px já cobre telas 2x — o original tinha 820. -->
+                        <picture>
+                            <source type="image/avif" srcset="assets/etapa-folego.avif">
+                            <source type="image/webp" srcset="assets/etapa-folego.webp">
+                            <img src="assets/etapa-folego-fallback.jpg" alt="Guilherme tocando gaita de olhos fechados contra o céu, trabalhando fôlego e embocadura" width="820" height="1230" loading="lazy" decoding="async">
+                        </picture>
                         <span class="tintype__corner tintype__corner--tl" aria-hidden="true"></span>
                         <span class="tintype__corner tintype__corner--tr" aria-hidden="true"></span>
                         <span class="tintype__corner tintype__corner--bl" aria-hidden="true"></span>
@@ -237,7 +268,11 @@
 
                 <article class="card reveal" style="--d:70ms">
                     <figure class="tintype">
-                        <img src="assets/etapa-dominio.jpg" alt="Guilherme observando a gaita nas mãos, estudando a disposição das notas" width="820" height="1230" loading="lazy" decoding="async">
+                        <picture>
+                            <source type="image/avif" srcset="assets/etapa-dominio.avif">
+                            <source type="image/webp" srcset="assets/etapa-dominio.webp">
+                            <img src="assets/etapa-dominio-fallback.jpg" alt="Guilherme observando a gaita nas mãos, estudando a disposição das notas" width="820" height="1230" loading="lazy" decoding="async">
+                        </picture>
                         <span class="tintype__corner tintype__corner--tl" aria-hidden="true"></span>
                         <span class="tintype__corner tintype__corner--tr" aria-hidden="true"></span>
                         <span class="tintype__corner tintype__corner--bl" aria-hidden="true"></span>
@@ -257,7 +292,11 @@
 
                 <article class="card reveal" style="--d:140ms">
                     <figure class="tintype">
-                        <img src="assets/etapa-estrada.jpg" alt="Guilherme sentado no alto de um vagão de carga tocando gaita, com o céu ao fundo" width="820" height="1230" loading="lazy" decoding="async">
+                        <picture>
+                            <source type="image/avif" srcset="assets/etapa-estrada.avif">
+                            <source type="image/webp" srcset="assets/etapa-estrada.webp">
+                            <img src="assets/etapa-estrada-fallback.jpg" alt="Guilherme sentado no alto de um vagão de carga tocando gaita, com o céu ao fundo" width="820" height="1230" loading="lazy" decoding="async">
+                        </picture>
                         <span class="tintype__corner tintype__corner--tl" aria-hidden="true"></span>
                         <span class="tintype__corner tintype__corner--tr" aria-hidden="true"></span>
                         <span class="tintype__corner tintype__corner--bl" aria-hidden="true"></span>
@@ -332,7 +371,11 @@
             <div class="mentor">
                 <div class="mentor__figure reveal">
                     <figure class="tintype tintype--round" data-parallax="0.05">
-                        <img src="assets/mentor.jpg" alt="Retrato de Guilherme Barros segurando duas gaitas" width="560" height="764" loading="lazy" decoding="async">
+                        <picture>
+                            <source type="image/avif" srcset="assets/mentor.avif">
+                            <source type="image/webp" srcset="assets/mentor.webp">
+                            <img src="assets/mentor-fallback.jpg" alt="Retrato de Guilherme Barros segurando duas gaitas" width="560" height="764" loading="lazy" decoding="async">
+                        </picture>
                     </figure>
                 </div>
                 <div class="mentor__body reveal" style="--d:70ms">
@@ -430,8 +473,22 @@
                     <div class="offer__photos" aria-hidden="true">
                         <span class="offer__spin"></span>
                         <span class="offer__glow"></span>
-                        <img class="offer__gaita offer__gaita--rosa" src="assets/gaita-rosa.png" alt="" width="780" height="780" decoding="async">
-                        <img class="offer__gaita offer__gaita--azul" src="assets/gaita-azul.png" alt="" width="780" height="780" decoding="async">
+                        <!-- Aparecem a 132x132 (.offer__gaita); os PNG de 780px
+                             pesavam 555KB e 520KB, mais que a página inteira.
+                             396px cobre tela 3x, e AVIF/WebP guardam a
+                             transparência que o recorte da gaita precisa.
+                             São decorativas (alt vazio, pai aria-hidden) e
+                             ficam bem abaixo da dobra: podem carregar tarde. -->
+                        <picture>
+                            <source type="image/avif" srcset="assets/gaita-rosa.avif">
+                            <source type="image/webp" srcset="assets/gaita-rosa.webp">
+                            <img class="offer__gaita offer__gaita--rosa" src="assets/gaita-rosa-fallback.png" alt="" width="780" height="780" loading="lazy" decoding="async">
+                        </picture>
+                        <picture>
+                            <source type="image/avif" srcset="assets/gaita-azul.avif">
+                            <source type="image/webp" srcset="assets/gaita-azul.webp">
+                            <img class="offer__gaita offer__gaita--azul" src="assets/gaita-azul-fallback.png" alt="" width="780" height="780" loading="lazy" decoding="async">
+                        </picture>
                     </div>
                     <p class="offer__colors">Vem na cor <strong>rosa</strong> ou <strong>azul</strong> — você escolhe</p>
 

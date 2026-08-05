@@ -82,6 +82,12 @@ function setupDust() {
     let motes = [];
     let raf = null;
     let awake = true;
+    // Medidas do palco, guardadas pelo seed(). O draw() rodava um
+    // clientWidth/clientHeight por quadro, e cada leitura dessas obriga
+    // o navegador a recalcular o layout na hora — 60x por segundo, para
+    // buscar dois números que só mudam quando a janela muda de tamanho.
+    let cw = 0;
+    let ch = 0;
 
     /* Halo desenhado uma única vez num canvas à parte. Reaproveitar este
        sprite dá brilho macio a cada partícula sem recriar um gradiente a
@@ -102,6 +108,9 @@ function setupDust() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const w = hero.offsetWidth;
         const h = hero.offsetHeight;
+
+        cw = w;
+        ch = h;
 
         canvas.width = w * dpr;
         canvas.height = h * dpr;
@@ -130,8 +139,8 @@ function setupDust() {
     };
 
     const draw = () => {
-        const w = canvas.clientWidth;
-        const h = canvas.clientHeight;
+        const w = cw;
+        const h = ch;
         ctx.clearRect(0, 0, w, h);
         // Partículas sobrepostas somam luz em vez de se taparem
         ctx.globalCompositeOperation = 'lighter';
@@ -189,17 +198,26 @@ function setupParallax() {
 
     let ticking = false;
 
+    /* Primeiro mede tudo, só então escreve. Medir e escrever alternadamente
+       no mesmo laço faz cada escrita sujar o layout e a leitura seguinte
+       forçar um recálculo síncrono — de graça, no meio da rolagem. */
     const apply = () => {
-        const mid = window.innerHeight / 2;
+        const vh = window.innerHeight;
+        const mid = vh / 2;
 
+        const writes = [];
         layers.forEach(el => {
             const box = el.getBoundingClientRect();
             // Só calcula o que está por perto da viewport
-            if (box.bottom < -200 || box.top > window.innerHeight + 200) return;
+            if (box.bottom < -200 || box.top > vh + 200) return;
 
             const offset = (box.top + box.height / 2 - mid) * Number(el.dataset.parallax);
-            // Propriedade `translate` em vez de `transform`: não conflita
-            // com a leve rotação que o CSS já aplica na moldura.
+            writes.push([el, offset]);
+        });
+
+        // Propriedade `translate` em vez de `transform`: não conflita
+        // com a leve rotação que o CSS já aplica na moldura.
+        writes.forEach(([el, offset]) => {
             el.style.translate = `0 ${offset.toFixed(1)}px`;
         });
 

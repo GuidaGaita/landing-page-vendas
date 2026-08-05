@@ -10,7 +10,8 @@ landing-page-vendas/
 ├─ index.html      → conteúdo e estrutura das seções
 ├─ styles.css      → design system completo (cores, tipografia, animações)
 ├─ scripts.js      → revelações, contadores, poeira, parallax, player
-├─ assets/         → fotos
+├─ assets/         → fotos (masters + variantes) e fontes
+├─ tools/          → script de imagens, rodado à mão (não é build do site)
 └─ .github/workflows/deploy.yml
 ```
 
@@ -56,13 +57,12 @@ praticado fora da promoção.
 
 ## Imagens
 
-`assets/` contém só as 10 imagens que a página usa — os originais de câmera
-(bem maiores e mais pesados) foram descartados depois de gerar estas versões
-web. Se precisar recortar ou reprocessar alguma, terá que refotografar ou
-recuperar o original de outro backup: **eles não estão no git**, então
-apagados aqui não há como restaurar.
+Os JPG e PNG sem sufixo em `assets/` são os **masters** — os originais de
+câmera foram descartados e **não estão em lugar nenhum fora daqui**. Nunca
+apague um master: é dele que saem todas as variantes. Ele não é servido ao
+visitante, só fica no repositório.
 
-| Arquivo | Onde aparece |
+| Master | Onde aparece |
 |---|---|
 | `hero-duelo.jpg` | Fundo do topo, fundo da chamada final e imagem de compartilhamento |
 | `bg-vagao.jpg` | Fundo da seção "Por que tanta gente guarda a gaita na gaveta" |
@@ -74,10 +74,54 @@ apagados aqui não há como restaurar.
 | `etapa-dominio.jpg` | Retrato da Etapa 02 |
 | `etapa-estrada.jpg` | Retrato da Etapa 03 |
 | `mentor.jpg` | Retrato redondo do mentor |
+| `gaita-azul.png` / `gaita-rosa.png` | As duas gaitas flutuando no cartão de oferta |
 
-Peso total: cerca de 1,8 MB para as 10 — bem abaixo do que os originais de
-câmera pesariam (perto de 100 MB, o que levaria mais de um minuto para
-carregar no celular).
+### O que o visitante recebe
+
+A página não serve os masters. Cada um gera variantes em AVIF, WebP e um
+fallback, em uma ou duas larguras, e o navegador escolhe sozinho:
+
+- no `index.html`, via `<picture>` com `<source type="...">`;
+- no `styles.css`, via `image-set()`, com a largura de celular como base e a
+  de desktop num `@media (min-width: 801px)`.
+
+Na prática um celular baixa cerca de **350 KB** de página inteira, contra
+1,4 MB antes de as variantes existirem.
+
+O `<picture>` leva `display: contents` no reset do `styles.css`: ele existe
+só para o navegador escolher o formato e não deve entrar no layout, senão a
+caixa dele viraria o item flex de `.offer__photos` no lugar da imagem.
+
+### Regerar as variantes
+
+Depois de trocar ou acrescentar um master:
+
+```bash
+npm install sharp
+node tools/gerar-imagens.js
+```
+
+Commite as variantes junto. O site em si continua sem build e sem
+dependência — o `sharp` só serve para rodar esse script à mão.
+
+As larguras e qualidades ficam na tabela `FOTOS` no topo do script. Os fundos
+usam qualidade bem mais baixa (36) que as fotos nítidas (46-50) de propósito:
+eles aparecem sob `opacity` .4-.8, sépia e um véu escuro, então a perda não
+chega à tela.
+
+## Fontes
+
+Ficam em `assets/fonts/`, servidas do próprio domínio — não do Google Fonts.
+A folha do `fonts.googleapis.com` bloqueava a renderização e ainda exigia um
+segundo salto até o `fonts.gstatic.com` antes de qualquer letra aparecer.
+
+Só o subset latino, que cobre todo o português. O Outfit é variável: um
+arquivo de 32 KB entrega de 400 a 700. Os `@font-face` estão no topo do
+`styles.css` e os dois mais críticos têm `preload` no `<head>`.
+
+Para trocar um peso ou uma família, baixe o `.woff2` do subset latino, ponha
+em `assets/fonts/` e ajuste o `@font-face` — não volte a apontar para o CDN
+do Google.
 
 ### Ajustar a intensidade de um fundo
 
@@ -93,10 +137,11 @@ contrário. Para trocar a foto de uma seção, basta mudar a classe
 
 ### Trocar uma foto
 
-Substitua o arquivo, mantendo o nome e a proporção aproximada. Ao gerar a
-partir de uma foto nova, use: fundos horizontais com 1700–2400 px de largura
-e qualidade JPEG 60–70 (ficam sob camadas escuras, não precisam de mais), e
-retratos verticais com ~820 px de largura e qualidade 82.
+Substitua o **master**, mantendo o nome e a proporção aproximada — fundos
+horizontais com 1700–2400 px de largura, retratos verticais com ~820 px. Em
+seguida rode `node tools/gerar-imagens.js` para refazer as variantes, e
+commite as duas coisas. Trocar só o master não muda nada na página: ela serve
+as variantes.
 
 ## Publicação (GitHub Pages)
 

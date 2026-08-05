@@ -3,6 +3,37 @@
    Paleta de terra, tipografia de cartaz, molduras tintype.
    ═══════════════════════════════════════════════════════════ */
 
+/* ── FONTES ──────────────────────────────────────────────────
+   Servidas do próprio domínio (assets/fonts/), não do Google.
+   Só o subset latino, que cobre todo o português — inclusive
+   ã, ç, õ e os acentos. O Outfit é variável: um único arquivo
+   de 32KB entrega de 400 a 700, no lugar dos sete pesos
+   estáticos que a página pedia antes e nem usava.
+   font-display: swap mantém o texto legível durante a carga. */
+@font-face {
+    font-family: 'Outfit';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('assets/fonts/outfit-latin-var.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Alfa Slab One';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/alfa-slab-one-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Rye';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/rye-latin.woff2') format('woff2');
+}
+
 /* ── RESET ───────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -10,6 +41,13 @@
 
 img, svg, canvas { display: block; max-width: 100%; }
 img { height: auto; }
+
+/* O <picture> existe só para o navegador escolher entre AVIF, WebP e o
+   formato antigo — ele não deve participar do layout. Sem isto a caixa
+   dele viraria o item flex de .offer__photos e o filho de .hero__photo,
+   no lugar da própria imagem, e as regras que miram o <img> (height:100%,
+   z-index, o leque das duas gaitas) passariam a medir a caixa errada. */
+picture { display: contents; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 ul, ol { list-style: none; }
@@ -183,12 +221,98 @@ body {
 /* A figura dele está bem à direita do quadro, não no centro — em
    telas estreitas o recorte "center" pegava só a área vazia perto
    da roda do trem, sobrando apenas a borda do braço. */
-.section-bg--vagao     { background-image: url('assets/bg-vagao.jpg');     background-position: 71% 48%; }
-.section-bg--trilhos   { background-image: url('assets/bg-trilhos.jpg');   background-position: center 45%; }
-.section-bg--vagoes    { background-image: url('assets/bg-vagoes.jpg');    background-position: center 58%; }
-.section-bg--encarando { background-image: url('assets/bg-encarando.jpg'); background-position: center 26%; }
-.section-bg--trem      { background-image: url('assets/bg-trem.jpg');      background-position: center 62%; }
-.section-bg--duelo     { background-image: url('assets/hero-duelo.jpg');   background-position: center 26%; }
+.section-bg--vagao     { background-position: 71% 48%; }
+.section-bg--trilhos   { background-position: center 45%; }
+.section-bg--vagoes    { background-position: center 58%; }
+.section-bg--encarando { background-position: center 26%; }
+.section-bg--trem      { background-position: center 62%; }
+.section-bg--duelo     { background-position: center 26%; }
+
+/* Cada fundo sai em AVIF, WebP e JPG: o navegador fica com o primeiro
+   formato que reconhece, e quem não entende image-set() cai no url()
+   da linha de cima. A largura base aqui é a de celular (800px) — o
+   bloco logo abaixo troca pela de 1280px em telas maiores, para o
+   celular nunca baixar a foto grande.
+
+   Estas fotos aguentam compressão pesada (q36) porque nunca são vistas
+   limpas: entram com opacity .4-.8, filtro sépia e um véu escuro por
+   cima (ver .section-bg e .has-bg::after). */
+.section-bg--vagao {
+    background-image: url('assets/bg-vagao-fallback.jpg');
+    background-image: image-set(url('assets/bg-vagao-800.avif') type('image/avif'),
+                                url('assets/bg-vagao-800.webp') type('image/webp'),
+                                url('assets/bg-vagao-fallback.jpg') type('image/jpeg'));
+}
+.section-bg--trilhos {
+    background-image: url('assets/bg-trilhos-fallback.jpg');
+    background-image: image-set(url('assets/bg-trilhos-800.avif') type('image/avif'),
+                                url('assets/bg-trilhos-800.webp') type('image/webp'),
+                                url('assets/bg-trilhos-fallback.jpg') type('image/jpeg'));
+}
+.section-bg--vagoes {
+    background-image: url('assets/bg-vagoes-fallback.jpg');
+    background-image: image-set(url('assets/bg-vagoes-800.avif') type('image/avif'),
+                                url('assets/bg-vagoes-800.webp') type('image/webp'),
+                                url('assets/bg-vagoes-fallback.jpg') type('image/jpeg'));
+}
+.section-bg--encarando {
+    background-image: url('assets/bg-encarando-fallback.jpg');
+    background-image: image-set(url('assets/bg-encarando-800.avif') type('image/avif'),
+                                url('assets/bg-encarando-800.webp') type('image/webp'),
+                                url('assets/bg-encarando-fallback.jpg') type('image/jpeg'));
+}
+.section-bg--trem {
+    background-image: url('assets/bg-trem-fallback.jpg');
+    background-image: image-set(url('assets/bg-trem-800.avif') type('image/avif'),
+                                url('assets/bg-trem-800.webp') type('image/webp'),
+                                url('assets/bg-trem-fallback.jpg') type('image/jpeg'));
+}
+/* Reaproveita a foto do hero, então usa as mesmas variantes dela */
+.section-bg--duelo {
+    background-image: url('assets/hero-duelo-fallback.jpg');
+    background-image: image-set(url('assets/hero-duelo-768.avif') type('image/avif'),
+                                url('assets/hero-duelo-768.webp') type('image/webp'),
+                                url('assets/hero-duelo-fallback.jpg') type('image/jpeg'));
+}
+
+@media (min-width: 801px) {
+    .section-bg--vagao {
+        background-image: url('assets/bg-vagao-fallback.jpg');
+        background-image: image-set(url('assets/bg-vagao-1280.avif') type('image/avif'),
+                                    url('assets/bg-vagao-1280.webp') type('image/webp'),
+                                    url('assets/bg-vagao-fallback.jpg') type('image/jpeg'));
+    }
+    .section-bg--trilhos {
+        background-image: url('assets/bg-trilhos-fallback.jpg');
+        background-image: image-set(url('assets/bg-trilhos-1280.avif') type('image/avif'),
+                                    url('assets/bg-trilhos-1280.webp') type('image/webp'),
+                                    url('assets/bg-trilhos-fallback.jpg') type('image/jpeg'));
+    }
+    .section-bg--vagoes {
+        background-image: url('assets/bg-vagoes-fallback.jpg');
+        background-image: image-set(url('assets/bg-vagoes-1280.avif') type('image/avif'),
+                                    url('assets/bg-vagoes-1280.webp') type('image/webp'),
+                                    url('assets/bg-vagoes-fallback.jpg') type('image/jpeg'));
+    }
+    .section-bg--encarando {
+        background-image: url('assets/bg-encarando-fallback.jpg');
+        background-image: image-set(url('assets/bg-encarando-1280.avif') type('image/avif'),
+                                    url('assets/bg-encarando-1280.webp') type('image/webp'),
+                                    url('assets/bg-encarando-fallback.jpg') type('image/jpeg'));
+    }
+    .section-bg--trem {
+        background-image: url('assets/bg-trem-fallback.jpg');
+        background-image: image-set(url('assets/bg-trem-1280.avif') type('image/avif'),
+                                    url('assets/bg-trem-1280.webp') type('image/webp'),
+                                    url('assets/bg-trem-fallback.jpg') type('image/jpeg'));
+    }
+    .section-bg--duelo {
+        background-image: url('assets/hero-duelo-fallback.jpg');
+        background-image: image-set(url('assets/hero-duelo-1200.avif') type('image/avif'),
+                                    url('assets/hero-duelo-1200.webp') type('image/webp'),
+                                    url('assets/hero-duelo-fallback.jpg') type('image/jpeg'));
+    }
+}
 
 /* Reenquadra a mesma foto quando ela se repete em outra seção */
 .section-bg--alto { background-position: center 28%; }
