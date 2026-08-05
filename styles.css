@@ -77,6 +77,14 @@ body {
     font-weight: 400;
     line-height: 1.65;
     overflow-x: hidden;
+    /* Texto não selecionável em toda a página — sem campos de
+       formulário aqui, não há nada que precise ficar selecionável,
+       e assim o cursor também para de virar "I" ao passar por cima
+       do texto. */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    cursor: default;
     /* Espaço para a barra fixa do celular não cobrir o rodapé */
     padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
     /* Brilho ambiente: sol poente no topo, brasa no rodapé */
