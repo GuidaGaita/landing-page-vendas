@@ -9,7 +9,7 @@ build e sem dependências: os três arquivos da raiz são o site inteiro.
 landing-page-vendas/
 ├─ index.html      → conteúdo e estrutura das seções
 ├─ styles.css      → design system completo (cores, tipografia, animações)
-├─ scripts.js      → revelações, contadores, poeira, parallax, player
+├─ scripts.js      → revelações, contadores, poeira, parallax, FAQ
 ├─ assets/         → fotos (masters + variantes) e fontes
 ├─ tools/          → script de imagens, rodado à mão (não é build do site)
 └─ .github/workflows/deploy.yml
@@ -26,8 +26,6 @@ direto pelo arquivo quebra o carregamento das imagens de fundo.
 
 ## Pendências de conteúdo
 
-Três coisas dependem de material que ainda não está no repositório.
-
 ### 1. Depoimentos — obrigatório antes de publicar
 
 A seção `#depoimentos` tem três cartões marcados com **"⚠ Preencher"**, em
@@ -36,24 +34,35 @@ despercebidos. Substitua cada um pelo depoimento real de um aluno seguindo o
 modelo que está comentado logo acima da seção no `index.html`, e remova a
 classe `quote--vazio` e o `<span class="quote__flag">`.
 
-### 2. Prévia em áudio — opcional
+Quando houver depoimentos reais, vale acrescentar `aggregateRating` ao
+JSON-LD do `<head>` — hoje ele é omitido de propósito, porque inventar nota
+e quantidade de avaliações rende penalização manual do Google.
 
-Grave um trecho tocando (30 a 60 segundos) e salve como:
+### 2. Links legais do rodapé — apontam para lugar nenhum
 
-```
-assets/previa.mp3
-```
+"Política de Privacidade" e "Termos de Uso" estão como `href="#"`. Numa
+página que recebe pagamento isso costuma ser exigido, inclusive pelo próprio
+Greenn. Crie as duas páginas e troque os `href`.
 
-A seção de prévia e o link "Ouvir uma prévia" do topo nascem escondidos e
-aparecem sozinhos assim que o arquivo existir. Sem o arquivo, a página
-simplesmente não mostra o player — nada quebra.
+### 3. Nenhuma medição instalada
 
-### 3. Oferta com prazo — desativada
+Não há Meta Pixel, Google Analytics nem GTM. Sem isso não dá para saber
+quantos chegaram, quantos rolaram até o preço e qual dos dois planos recebe
+mais cliques — informação essencial se a página for receber anúncios.
 
-O bloco de "De R$ 297 / 50% OFF" está comentado dentro do cartão de preço, no
-`index.html`, junto das instruções para reativá-lo. Só volte a exibir o
-desconto quando existir um prazo real, e apenas se R$ 297 for de fato o preço
-praticado fora da promoção.
+### 4. Parcelamento é estimativa
+
+"12x de R$ 25,39" (R$ 247) e "12x de R$ 34,64" (R$ 337) foram calculados
+aplicando a taxa de juros que o parcelamento antigo já tinha. Confirme os
+valores reais no painel do Greenn e ajuste no `index.html`.
+
+## Endereço de publicação
+
+O `<head>` traz `canonical`, `og:url` e `og:image` fixados em
+`https://guidagaita.github.io/landing-page-vendas/`. A `og:image` precisa ser
+absoluta, senão WhatsApp e Facebook não exibem a imagem ao compartilhar o
+link. **Se um domínio próprio for configurado, essas três URLs precisam ser
+atualizadas** — junto das duas `url` dentro do JSON-LD.
 
 ## Imagens
 
@@ -66,7 +75,7 @@ visitante, só fica no repositório.
 |---|---|
 | `hero-duelo.jpg` | Fundo do topo, fundo da chamada final e imagem de compartilhamento |
 | `bg-vagao.jpg` | Fundo da seção "Por que tanta gente guarda a gaita na gaveta" |
-| `bg-trilhos.jpg` | Fundo da seção de prévia em áudio |
+| `bg-trilhos.jpg` | **Reserva** — era o fundo da prévia em áudio, que foi removida. Master preservado; as variantes (`bg-trilhos-*`, 376 KB) estão órfãs e podem ser apagadas, já que `tools/gerar-imagens.js` as refaz se a foto voltar a ser usada |
 | `bg-vagoes.jpg` | Fundo das seções "A trilha" e "Quem te guia" |
 | `bg-encarando.jpg` | Fundo da seção de preço |
 | `bg-trem.jpg` | Fundo dos depoimentos, da garantia, do FAQ e do rodapé |

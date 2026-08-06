@@ -3,17 +3,27 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0A0705" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230A0705'/><rect x='4.5' y='11' width='23' height='10' rx='2.5' fill='none' stroke='%23E2622C' stroke-width='2'/><path d='M10 14.5v3M14 14.5v3M18 14.5v3M22 14.5v3' stroke='%23E0A83E' stroke-width='1.7' stroke-linecap='round'/></svg>" />
+    <!-- Mesmo tom do fundo da página (--void), para a barra do
+         navegador no celular não destoar do topo do site. -->
+    <meta name="theme-color" content="#241A10" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23241A10'/><rect x='4.5' y='11' width='23' height='10' rx='2.5' fill='none' stroke='%23E2622C' stroke-width='2'/><path d='M10 14.5v3M14 14.5v3M18 14.5v3M22 14.5v3' stroke='%23E0A83E' stroke-width='1.7' stroke-linecap='round'/></svg>" />
 
     <title>GuidaGaita — Do zero à primeira música em menos de uma semana!</title>
     <meta name="description" content="Aprenda gaita diatônica com 10 minutos por dia. Mais de 100 aulas diretas ao ponto, acesso vitalício, comunidade e suporte com o professor Guilherme Barros. Garantia de 7 dias." />
+    <link rel="canonical" href="https://guidagaita.github.io/landing-page-vendas/" />
 
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://guidagaita.github.io/landing-page-vendas/" />
+    <meta property="og:site_name" content="GuidaGaita" />
     <meta property="og:title" content="GuidaGaita — No duelo entre você e a gaita, só falta você sacar" />
     <meta property="og:description" content="Do zero à primeira música em menos de uma semana, com 10 minutos por dia. 100+ aulas, acesso vitalício e garantia de 7 dias." />
-    <!-- Redes sociais não leem AVIF/WebP: aqui vai sempre o JPG. -->
-    <meta property="og:image" content="assets/hero-duelo-fallback.jpg" />
+    <!-- Endereço absoluto de propósito: WhatsApp, Facebook e afins não
+         resolvem caminho relativo e simplesmente não mostrariam imagem.
+         E sempre o JPG, porque essas plataformas não leem AVIF/WebP. -->
+    <meta property="og:image" content="https://guidagaita.github.io/landing-page-vendas/assets/hero-duelo-fallback.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="800" />
+    <meta property="og:image:alt" content="Guilherme Barros apontando duas gaitas diatônicas para a câmera, na terra vermelha ao lado de um trem de carga" />
     <meta property="og:locale" content="pt_BR" />
     <meta name="twitter:card" content="summary_large_image" />
 
@@ -26,6 +36,69 @@
     <link rel="preload" href="assets/fonts/outfit-latin-var.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="assets/fonts/alfa-slab-one-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- Dados estruturados: descrevem o curso e os dois planos para o
+         Google, que pode então mostrar preço e formato direto no
+         resultado de busca.
+
+         Só entra aqui o que é verificável na própria página. Repare
+         que NÃO há "aggregateRating": inventar nota e número de
+         avaliações é exatamente o tipo de coisa que gera penalização
+         manual do Google, além de ser mentira. Quando os depoimentos
+         reais entrarem na página, aí sim vale acrescentar. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "Método GuidaGaita",
+      "description": "Curso online de gaita diatônica (harmônica) para iniciantes absolutos. Mais de 100 videoaulas curtas, organizadas em uma sequência progressiva, com acesso vitalício, comunidade de alunos e suporte direto com o professor.",
+      "url": "https://guidagaita.github.io/landing-page-vendas/",
+      "inLanguage": "pt-BR",
+      "educationalLevel": "Iniciante",
+      "teaches": "Tocar gaita diatônica: respiração, embocadura, domínio das regiões grave, média e aguda, e repertório",
+      "isAccessibleForFree": false,
+      "provider": {
+        "@type": "Person",
+        "name": "Guilherme Barros",
+        "jobTitle": "Harmonicista e professor",
+        "alumniOf": [
+          { "@type": "Organization", "name": "Escola de Música de Brasília" },
+          { "@type": "Organization", "name": "Clube do Choro" }
+        ]
+      },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "Online",
+        "courseSchedule": {
+          "@type": "Schedule",
+          "duration": "PT10M",
+          "repeatFrequency": "Daily"
+        }
+      },
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Curso",
+          "description": "Método GuidaGaita completo + comunidade de alunos",
+          "price": "247.00",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "category": "Paid",
+          "url": "https://payfast.greenn.com.br/6z65zng/offer/QyL4EC?ch_id=141822"
+        },
+        {
+          "@type": "Offer",
+          "name": "Curso + Gaita",
+          "description": "Método GuidaGaita completo + comunidade de alunos + gaita diatônica Easttop T104S enviada ao aluno",
+          "price": "337.00",
+          "priceCurrency": "BRL",
+          "availability": "https://schema.org/InStock",
+          "category": "Paid",
+          "url": "https://payfast.greenn.com.br/r3k5wcq/offer/Xl6vxa?ch_id=141821"
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
 
@@ -106,12 +179,6 @@
 
                 <div class="hero__actions reveal" style="--d:150ms">
                     <a href="#oferta" class="btn btn--solid">Quero tocar minha primeira música</a>
-                    <a href="#previa" class="btn btn--link" data-audio-link hidden>
-                        <span class="btn__play" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
-                        </span>
-                        Ouvir uma prévia
-                    </a>
                 </div>
 
                 <dl class="stats reveal" style="--d:200ms">
@@ -195,36 +262,7 @@
         </div>
     </section>
 
-    <!--
-        ══════════ 4. PRÉVIA EM ÁUDIO ══════════
-        Esta seção fica escondida até você colocar o arquivo de áudio em:
-            assets/previa.mp3
-        Basta gravar um trecho seu tocando (30–60s) e salvar com esse nome.
-        O player, a forma de onda e o link "Ouvir uma prévia" do topo
-        aparecem sozinhos assim que o arquivo existir.
-    -->
-    <section class="section section--previa has-bg" id="previa" data-audio-section hidden>
-        <div class="section-bg section-bg--trilhos" aria-hidden="true"></div>
-        <div class="shell previa__inner">
-            <p class="eyebrow reveal">A prévia</p>
-            <h2 class="section__title reveal">Ouça onde<br>você vai chegar</h2>
-            <p class="prose prose--center reveal">
-                Antes de ler mais qualquer coisa, escute. É esse som que sai de uma gaita simples
-                depois de algumas semanas seguindo o método.
-            </p>
-
-            <div class="player reveal" id="player">
-                <button class="player__btn" id="player-btn" type="button" aria-label="Tocar prévia">
-                    <svg class="player__icon player__icon--play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
-                    <svg class="player__icon player__icon--pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h3.2v14H7zM13.8 5H17v14h-3.2z"/></svg>
-                </button>
-                <div class="player__wave" id="player-wave" aria-hidden="true"></div>
-                <span class="player__time" id="player-time">0:00</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- ══════════ 5. MÓDULOS ══════════ -->
+    <!-- ══════════ 4. MÓDULOS ══════════ -->
     <section class="section section--trilha has-bg" id="trilha">
         <div class="section-bg section-bg--vagoes" aria-hidden="true"></div>
         <div class="shell">
@@ -317,7 +355,7 @@
         </div>
     </section>
 
-    <!-- ══════════ 6. DEPOIMENTOS ══════════ -->
+    <!-- ══════════ 5. DEPOIMENTOS ══════════ -->
     <!--
         ⚠ SUBSTITUA OS TRÊS CARTÕES ABAIXO PELOS DEPOIMENTOS REAIS DOS SEUS ALUNOS.
         Enquanto tiverem a classe "quote--vazio", eles aparecem marcados como
@@ -364,7 +402,7 @@
         </div>
     </section>
 
-    <!-- ══════════ 7. MENTOR ══════════ -->
+    <!-- ══════════ 6. MENTOR ══════════ -->
     <section class="section section--mentor has-bg" id="mentor">
         <div class="section-bg section-bg--vagoes section-bg--alto" aria-hidden="true"></div>
         <div class="shell">
@@ -395,7 +433,7 @@
     </section>
 
     <!--
-        ══════════ 8. OFERTA ══════════
+        ══════════ 7. OFERTA ══════════
         ⚠ AINDA PENDENTE NESTA SEÇÃO — leia antes de publicar:
 
         1. PARCELAMENTO ESTIMADO: "12x de R$ 25,39" (R$ 247) e
@@ -529,7 +567,7 @@
         </div>
     </section>
 
-    <!-- ══════════ 9. GARANTIA ══════════ -->
+    <!-- ══════════ 8. GARANTIA ══════════ -->
     <section class="section section--garantia has-bg">
         <div class="section-bg section-bg--trem section-bg--alto" aria-hidden="true"></div>
         <div class="shell">
@@ -552,7 +590,7 @@
         </div>
     </section>
 
-    <!-- ══════════ 10. FAQ ══════════ -->
+    <!-- ══════════ 9. FAQ ══════════ -->
     <section class="section section--faq has-bg" id="faq">
         <div class="section-bg section-bg--trem" aria-hidden="true"></div>
         <div class="shell">
@@ -612,7 +650,7 @@
         </div>
     </section>
 
-    <!-- ══════════ 11. CHAMADA FINAL ══════════ -->
+    <!-- ══════════ 10. CHAMADA FINAL ══════════ -->
     <section class="section section--final has-bg">
         <div class="section-bg section-bg--duelo" aria-hidden="true"></div>
         <div class="shell final__inner">

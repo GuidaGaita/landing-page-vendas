@@ -342,97 +342,6 @@ function setupFAQ() {
     }, { passive: true });
 }
 
-/* ── Player da prévia ────────────────────────────────────────
-   A seção nasce escondida. Só aparece se o arquivo de áudio
-   existir de verdade — assim a página nunca mostra um player
-   quebrado enquanto o MP3 não for adicionado.
-   ─────────────────────────────────────────────────────────── */
-const AUDIO_SRC = 'assets/previa.mp3';
-
-function setupPlayer() {
-    const section = document.querySelector('[data-audio-section]');
-    const wrap    = document.getElementById('player');
-    const btn     = document.getElementById('player-btn');
-    const wave    = document.getElementById('player-wave');
-    const time    = document.getElementById('player-time');
-    if (!section || !wrap || !btn || !wave || !time) return;
-
-    const clock = s => {
-        if (!isFinite(s) || s < 0) return '0:00';
-        const m = Math.floor(s / 60);
-        const r = Math.floor(s % 60);
-        return `${m}:${String(r).padStart(2, '0')}`;
-    };
-
-    // Menos barras em tela estreita: 56 não caberiam num celular pequeno
-    const barCount = window.innerWidth < 560 ? 32 : 56;
-
-    const audio = new Audio();
-    audio.preload = 'metadata';
-    audio.src = AUDIO_SRC;
-
-    // Enquanto não houver metadados válidos, tudo segue escondido
-    audio.addEventListener('loadedmetadata', () => {
-        if (!isFinite(audio.duration) || audio.duration === 0) return;
-        section.hidden = false;
-        document.querySelectorAll('[data-audio-link]').forEach(el => { el.hidden = false; });
-        time.textContent = clock(audio.duration);
-    });
-
-    audio.addEventListener('error', () => { section.hidden = true; });
-
-    // Desenha as barras da forma de onda
-    const bars = [];
-    for (let i = 0; i < barCount; i++) {
-        const bar = document.createElement('span');
-        bar.className = 'player__bar';
-        // Envelope orgânico: mais cheio no meio, com variação
-        const curve = Math.sin((i / barCount) * Math.PI);
-        const jitter = 0.42 + Math.random() * 0.58;
-        bar.style.height = `${Math.max(12, curve * jitter * 100)}%`;
-        wave.appendChild(bar);
-        bars.push(bar);
-    }
-
-    const paintProgress = () => {
-        const ratio = audio.duration ? audio.currentTime / audio.duration : 0;
-        const head = Math.floor(ratio * barCount);
-
-        bars.forEach((bar, i) => {
-            bar.classList.toggle('is-past', i < head);
-            bar.classList.toggle('is-live', i === head);
-        });
-
-        time.textContent = clock(audio.duration - audio.currentTime);
-    };
-
-    btn.addEventListener('click', () => {
-        if (audio.paused) {
-            audio.play().catch(() => { /* navegador bloqueou: ignora em silêncio */ });
-        } else {
-            audio.pause();
-        }
-    });
-
-    audio.addEventListener('play',  () => { wrap.classList.add('is-playing'); btn.setAttribute('aria-label', 'Pausar prévia'); });
-    audio.addEventListener('pause', () => { wrap.classList.remove('is-playing'); btn.setAttribute('aria-label', 'Tocar prévia'); });
-    audio.addEventListener('timeupdate', paintProgress);
-
-    audio.addEventListener('ended', () => {
-        audio.currentTime = 0;
-        paintProgress();
-    });
-
-    // Clique na onda avança para o ponto escolhido
-    wave.addEventListener('click', e => {
-        if (!audio.duration) return;
-        const box = wave.getBoundingClientRect();
-        const ratio = Math.min(Math.max((e.clientX - box.left) / box.width, 0), 1);
-        audio.currentTime = ratio * audio.duration;
-        paintProgress();
-    });
-}
-
 /* ── Partida ─────────────────────────────────────────────── */
 function boot() {
     setupReveal();
@@ -443,7 +352,6 @@ function boot() {
     setupDock();
     setupTicker();
     setupFAQ();
-    setupPlayer();
 }
 
 if (document.readyState === 'loading') {

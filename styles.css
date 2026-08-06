@@ -125,18 +125,39 @@ body {
     cursor: default;
     /* Espaço para a barra fixa do celular não cobrir o rodapé */
     padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
-    /* Brilho ambiente: sol poente no topo, brasa no rodapé */
+}
+
+/* Brilho ambiente: sol poente no topo, brasa no rodapé.
+
+   Antes isso era um `background-attachment: fixed` no próprio body.
+   Esse modo impede o navegador de compor a rolagem na GPU: ele
+   precisa repintar a camada inteira a cada quadro rolado, e numa
+   página longa como esta é a principal fonte de engasgo no celular.
+
+   Numa camada `position: fixed` própria o resultado visual é o
+   mesmo, mas ela vira uma camada composta à parte — o scroll passa
+   a ser só deslocamento de camada, sem repintura. */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-image:
         radial-gradient(ellipse 100vw 62vh at 50% -8%,  rgba(226, 98, 44, .16), transparent 68%),
         radial-gradient(ellipse 70vw 45vh at 110% 82%, rgba(224, 168, 62, .07), transparent 70%),
         radial-gradient(ellipse 60vw 40vh at -10% 45%, rgba(168, 68, 40, .06), transparent 70%);
-    background-attachment: fixed;
 }
 
 /* ── TEXTURAS DE AMBIENTE ────────────────────────────────── */
+/* `inset` negativo dá folga para a textura deslizar sem mostrar a
+   borda. Estava em -100%, o que fazia a camada ocupar 3x a largura
+   E 3x a altura da tela — 9x a área visível sendo rasterizada e
+   guardada em memória de GPU à toa. O deslocamento da animação
+   chega a 3% do próprio tamanho, então -8% já é folga de sobra. */
 .fx-grain {
     position: fixed;
-    inset: -100%;
+    inset: -8%;
     z-index: 300;
     pointer-events: none;
     opacity: .05;
@@ -222,7 +243,6 @@ body {
    telas estreitas o recorte "center" pegava só a área vazia perto
    da roda do trem, sobrando apenas a borda do braço. */
 .section-bg--vagao     { background-position: 71% 48%; }
-.section-bg--trilhos   { background-position: center 45%; }
 .section-bg--vagoes    { background-position: center 58%; }
 .section-bg--encarando { background-position: center 26%; }
 .section-bg--trem      { background-position: center 62%; }
@@ -242,12 +262,6 @@ body {
     background-image: image-set(url('assets/bg-vagao-800.avif') type('image/avif'),
                                 url('assets/bg-vagao-800.webp') type('image/webp'),
                                 url('assets/bg-vagao-fallback.jpg') type('image/jpeg'));
-}
-.section-bg--trilhos {
-    background-image: url('assets/bg-trilhos-fallback.jpg');
-    background-image: image-set(url('assets/bg-trilhos-800.avif') type('image/avif'),
-                                url('assets/bg-trilhos-800.webp') type('image/webp'),
-                                url('assets/bg-trilhos-fallback.jpg') type('image/jpeg'));
 }
 .section-bg--vagoes {
     background-image: url('assets/bg-vagoes-fallback.jpg');
@@ -282,12 +296,6 @@ body {
                                     url('assets/bg-vagao-1280.webp') type('image/webp'),
                                     url('assets/bg-vagao-fallback.jpg') type('image/jpeg'));
     }
-    .section-bg--trilhos {
-        background-image: url('assets/bg-trilhos-fallback.jpg');
-        background-image: image-set(url('assets/bg-trilhos-1280.avif') type('image/avif'),
-                                    url('assets/bg-trilhos-1280.webp') type('image/webp'),
-                                    url('assets/bg-trilhos-fallback.jpg') type('image/jpeg'));
-    }
     .section-bg--vagoes {
         background-image: url('assets/bg-vagoes-fallback.jpg');
         background-image: image-set(url('assets/bg-vagoes-1280.avif') type('image/avif'),
@@ -319,7 +327,6 @@ body {
 
 /* Intensidade seção a seção — fotos mais presentes, véu mais leve */
 .section--problema { --bg-op: .82; --veu: .50; }
-.section--previa   { --bg-op: .78; --veu: .48; }
 .section--trilha   { --bg-op: .66; --veu: .58; }
 .section--vozes    { --bg-op: .62; --veu: .60; }
 .section--mentor   { --bg-op: .62; --veu: .60; }
@@ -559,18 +566,23 @@ strong { color: var(--bone); font-weight: 600; }
     z-index: 200;
     padding-block: .8rem;
     background: rgba(36, 26, 16, .78);
-    backdrop-filter: blur(16px) saturate(1.3);
-    -webkit-backdrop-filter: blur(16px) saturate(1.3);
     border-bottom: 1px solid transparent;
     transform: translateY(-100%);
     opacity: 0;
     transition: transform .45s var(--ease), opacity .35s, border-color .35s;
 }
 
+/* O desfoque de fundo é caro: o navegador precisa recompor o que
+   está atrás a cada quadro. Como o cabeçalho passa a primeira tela
+   inteira escondido, só ligamos o efeito quando ele aparece de
+   fato — o trecho mais pesado de rolagem (o hero, com a poeira em
+   canvas) fica livre desse custo. */
 .site-header.is-visible {
     transform: translateY(0);
     opacity: 1;
     border-bottom-color: var(--line);
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
 }
 
 .site-header__inner {
@@ -615,9 +627,11 @@ strong { color: var(--bone); font-weight: 600; }
     inset: auto 0 0;
     z-index: 210;
     padding: .8rem var(--gut) calc(.8rem + env(safe-area-inset-bottom, 0px));
-    background: linear-gradient(to top, rgba(31, 22, 14, .97) 60%, rgba(31, 22, 14, .82));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    /* Sem desfoque de fundo aqui de propósito: este fundo já é 97%
+       opaco, então o efeito era praticamente invisível — mas custava
+       uma recomposição por quadro numa camada fixa, justamente no
+       celular, onde sobra menos folga de desempenho. */
+    background: linear-gradient(to top, rgba(31, 22, 14, .98) 60%, rgba(31, 22, 14, .92));
     border-top: 1px solid var(--line);
     transition: transform .4s var(--ease), opacity .3s;
 }
@@ -1006,93 +1020,6 @@ strong { color: var(--bone); font-weight: 600; }
     line-height: 1.3;
     color: var(--bone);
     text-wrap: balance;
-}
-
-/* ── 4. PRÉVIA EM ÁUDIO ──────────────────────────────────── */
-.previa__inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.previa__inner .eyebrow { justify-content: center; }
-.previa__inner .section__title { text-align: center; }
-
-/* Player */
-.player {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    max-width: 540px;
-    margin-top: 2.5rem;
-    padding: .95rem 1.3rem .95rem .95rem;
-    background: linear-gradient(150deg, rgba(87, 63, 41, .92), rgba(47, 36, 23, .92));
-    border: 1px solid var(--line-warm);
-    border-radius: 60px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, .6), 0 1px 0 rgba(224, 168, 62, .1) inset;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.player__btn {
-    display: grid;
-    place-items: center;
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    color: #1A0C04;
-    background: linear-gradient(155deg, var(--gold-hi), var(--ember));
-    box-shadow: 0 0 0 0 rgba(226, 98, 44, .5), 0 6px 18px rgba(0, 0, 0, .4);
-    transition: transform .25s var(--ease), box-shadow .3s;
-}
-
-.player__btn:hover { transform: scale(1.07); box-shadow: 0 0 0 7px rgba(226, 98, 44, .13), 0 6px 18px rgba(0, 0, 0, .4); }
-
-.player__icon { width: 21px; height: 21px; }
-.player__icon--play  { margin-left: 2px; }
-.player__icon--pause { display: none; }
-
-.player.is-playing .player__icon--play  { display: none; }
-.player.is-playing .player__icon--pause { display: block; }
-
-/* Forma de onda */
-.player__wave {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    flex: 1;
-    height: 40px;
-    min-width: 0;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.player__bar {
-    flex: 1;
-    min-width: 2px;
-    border-radius: 2px;
-    background: var(--hide);
-    transform-origin: center;
-    transition: background .18s linear, height .12s var(--ease-soft);
-}
-
-.player__bar.is-past { background: linear-gradient(to top, var(--ember), var(--gold)); }
-
-.player.is-playing .player__bar.is-live {
-    background: var(--gold-hi);
-    box-shadow: 0 0 10px rgba(247, 204, 114, .65);
-}
-
-.player__time {
-    font-size: .82rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: var(--sand);
-    flex-shrink: 0;
-    min-width: 3.2ch;
 }
 
 /* ── 5. TRILHA / MÓDULOS ─────────────────────────────────── */
@@ -1943,7 +1870,6 @@ strong { color: var(--bone); font-weight: 600; }
 
     .pains  { margin-block: 1.3rem; }
     .turn   { margin-block: 1.3rem; }
-    .player { margin-top: 1.25rem; }
     .trail  { margin-top: 1.5rem; }
     .quotes { margin-top: 1.4rem; }
     .offer  { margin-top: .75rem; }
