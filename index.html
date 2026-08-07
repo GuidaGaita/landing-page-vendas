@@ -357,22 +357,18 @@
 
     <!-- ══════════ 5. DEPOIMENTOS ══════════ -->
     <!--
-        ⚠ SUBSTITUA OS TRÊS CARTÕES ABAIXO PELOS DEPOIMENTOS REAIS DOS SEUS ALUNOS.
-        Enquanto tiverem a classe "quote--vazio", eles aparecem marcados como
-        pendentes — NÃO publique a página assim.
+        Depoimentos reais de alunos, publicados com as palavras deles.
 
-        Modelo de um depoimento pronto (copie, cole e preencha):
+        Para acrescentar outro, copie um <figure> abaixo e troque o texto,
+        o nome e a idade. Se houver foto do aluno, ela entra como primeiro
+        filho do <figcaption>:
 
-        <figure class="quote reveal">
-            <blockquote><p>Texto exato do que o aluno escreveu.</p></blockquote>
-            <figcaption class="quote__who">
-                <img class="quote__face" src="assets/aluno-nome.jpg" alt="" width="48" height="48" loading="lazy">
-                <span>
-                    <strong>Nome do aluno</strong>
-                    <small>Cidade · tempo de curso</small>
-                </span>
-            </figcaption>
-        </figure>
+            <img class="quote__face" src="assets/aluno-nome.jpg" alt=""
+                 width="48" height="48" loading="lazy">
+
+        A grade se ajusta sozinha: 1 coluna no celular e 2 a partir do
+        tablet. Se um dia forem 3 ou mais, vale rever `.quotes` no
+        styles.css para voltar a três colunas no desktop.
     -->
     <section class="section section--vozes has-bg" id="depoimentos">
         <div class="section-bg section-bg--trem" aria-hidden="true"></div>
@@ -381,22 +377,28 @@
             <h2 class="section__title reveal">Quem já<br>pegou a estrada</h2>
 
             <div class="quotes">
-                <figure class="quote quote--vazio reveal" style="--d:0ms">
-                    <span class="quote__flag">⚠ Preencher</span>
-                    <blockquote><p>Espaço reservado para o depoimento real de um aluno.</p></blockquote>
-                    <figcaption class="quote__who"><span><strong>Nome do aluno</strong><small>Cidade · tempo de curso</small></span></figcaption>
+                <figure class="quote reveal" style="--d:0ms">
+                    <blockquote>
+                        <p>Falaaa professor, eu tento aprender gaita desde o final de 2016, mas sempre vivi naquele ciclo de começar, parar, adiar os estudos e acabar guardando o instrumento na gaveta. Mas, depois que comecei as suas aulas, meu aprendizado finalmente engrenou e melhorou muito. Obrigado pela excelente didática e por me ajudar a ter constância!</p>
+                    </blockquote>
+                    <figcaption class="quote__who">
+                        <span>
+                            <strong>João Marcos</strong>
+                            <small>29 anos</small>
+                        </span>
+                    </figcaption>
                 </figure>
 
-                <figure class="quote quote--vazio reveal" style="--d:60ms">
-                    <span class="quote__flag">⚠ Preencher</span>
-                    <blockquote><p>Espaço reservado para o depoimento real de um aluno.</p></blockquote>
-                    <figcaption class="quote__who"><span><strong>Nome do aluno</strong><small>Cidade · tempo de curso</small></span></figcaption>
-                </figure>
-
-                <figure class="quote quote--vazio reveal" style="--d:120ms">
-                    <span class="quote__flag">⚠ Preencher</span>
-                    <blockquote><p>Espaço reservado para o depoimento real de um aluno.</p></blockquote>
-                    <figcaption class="quote__who"><span><strong>Nome do aluno</strong><small>Cidade · tempo de curso</small></span></figcaption>
+                <figure class="quote reveal" style="--d:60ms">
+                    <blockquote>
+                        <p>Curso top top, melhor investimento do que fiz. Aulas de fácil entendimento e bem dinâmicas, sem falar que o professor ainda ajuda bastante no grupo 👏🏻👏🏻 Parabéns Guii 👏🏻</p>
+                    </blockquote>
+                    <figcaption class="quote__who">
+                        <span>
+                            <strong>Felipe Silva</strong>
+                            <small>33 anos</small>
+                        </span>
+                    </figcaption>
                 </figure>
             </div>
         </div>

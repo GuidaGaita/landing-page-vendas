@@ -1111,8 +1111,14 @@ strong { color: var(--bone); font-weight: 600; }
     margin-top: 2.8rem;
 }
 
+/* Coluna flex para a assinatura poder ser empurrada até a base: os
+   depoimentos têm tamanhos diferentes, e como a grade iguala a altura
+   dos cartões, sem isso a assinatura do texto mais curto ficaria
+   boiando no meio, com um vão vazio embaixo. */
 .quote {
     position: relative;
+    display: flex;
+    flex-direction: column;
     padding: 1.9rem 1.6rem 1.5rem;
     background: linear-gradient(168deg, rgba(87, 63, 41, .55), rgba(47, 36, 23, .45));
     border: 1px solid var(--line);
@@ -1147,6 +1153,9 @@ strong { color: var(--bone); font-weight: 600; }
     display: flex;
     align-items: center;
     gap: .75rem;
+    /* Encosta na base do cartão, alinhando as assinaturas entre
+       depoimentos de tamanhos diferentes */
+    margin-top: auto;
     padding-top: 1rem;
     border-top: 1px solid var(--line);
 }
@@ -1163,36 +1172,6 @@ strong { color: var(--bone); font-weight: 600; }
 .quote__who span { display: flex; flex-direction: column; line-height: 1.35; }
 .quote__who strong { font-size: .93rem; color: var(--bone); }
 .quote__who small  { font-size: .78rem; color: var(--ash); }
-
-/* Estado "ainda não preenchido" — visivelmente pendente */
-.quote--vazio {
-    border-style: dashed;
-    border-color: rgba(224, 168, 62, .32);
-    background: repeating-linear-gradient(
-        135deg,
-        rgba(224, 168, 62, .035) 0 12px,
-        transparent 12px 24px
-    );
-}
-
-.quote--vazio blockquote p,
-.quote--vazio .quote__who strong,
-.quote--vazio .quote__who small { color: var(--ash); font-style: italic; }
-
-.quote__flag {
-    display: inline-block;
-    margin-bottom: .9rem;
-    padding: .22rem .6rem;
-    font-family: var(--f-body);
-    font-size: .68rem;
-    font-weight: 700;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-    color: var(--gold-hi);
-    background: rgba(224, 168, 62, .12);
-    border: 1px solid rgba(224, 168, 62, .3);
-    border-radius: 3px;
-}
 
 /* ── 7. MENTOR ───────────────────────────────────────────── */
 .mentor {
@@ -1961,7 +1940,15 @@ strong { color: var(--bone); font-weight: 600; }
 
     .scroll-hint { display: block; }
 
-    .quotes { grid-template-columns: repeat(3, 1fr); }
+    /* Dois depoimentos: mantém duas colunas e centraliza o par. Com
+       três colunas sobraria uma vazia e os cartões encostariam à
+       esquerda. O limite de largura evita que dois cartões fiquem
+       esticados demais numa tela larga. */
+    .quotes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 860px;
+        margin-inline: auto;
+    }
 
     /* Corda pontilhada ligando as três etapas */
     .trail { gap: 2rem; }

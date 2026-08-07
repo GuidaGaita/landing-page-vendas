@@ -26,17 +26,19 @@ direto pelo arquivo quebra o carregamento das imagens de fundo.
 
 ## Pendências de conteúdo
 
-### 1. Depoimentos — obrigatório antes de publicar
+### 1. Depoimentos — dois publicados, sem foto
 
-A seção `#depoimentos` tem três cartões marcados com **"⚠ Preencher"**, em
-borda tracejada. Eles são propositalmente feios para que não passem
-despercebidos. Substitua cada um pelo depoimento real de um aluno seguindo o
-modelo que está comentado logo acima da seção no `index.html`, e remova a
-classe `quote--vazio` e o `<span class="quote__flag">`.
+A seção `#depoimentos` traz os relatos do João Marcos e do Felipe Silva, com
+as palavras deles. A grade está em 2 colunas no desktop; se um terceiro
+entrar, vale voltar `.quotes` para 3 colunas no `styles.css`.
 
-Quando houver depoimentos reais, vale acrescentar `aggregateRating` ao
-JSON-LD do `<head>` — hoje ele é omitido de propósito, porque inventar nota
-e quantidade de avaliações rende penalização manual do Google.
+Nenhum dos dois tem foto — o `<figcaption>` aceita uma, o modelo está
+comentado acima da seção no `index.html`.
+
+O JSON-LD do `<head>` continua **sem** `aggregateRating`, e isso é
+proposital: os depoimentos são texto livre, ninguém deu nota de 1 a 5.
+Inventar média e quantidade de avaliações rende penalização manual do
+Google. Só faz sentido acrescentar se você passar a coletar notas de fato.
 
 ### 2. Links legais do rodapé — apontam para lugar nenhum
 
