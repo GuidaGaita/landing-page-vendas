@@ -285,15 +285,30 @@ function setupTicker() {
     const group = track.querySelector('.ticker__group');
     if (!group) return;
 
-    // Preenche a largura da tela antes de espelhar
-    let guard = 0;
-    while (track.scrollWidth < window.innerWidth * 1.5 && guard < 12) {
-        track.appendChild(group.cloneNode(true));
-        guard++;
-    }
+    /* Mede UMA vez e calcula quantas cópias faltam.
 
-    // Espelha o conjunto: a animação de -50% fecha sem emenda
-    track.innerHTML = track.innerHTML + track.innerHTML;
+       Antes isto era um laço que lia `track.scrollWidth`, inseria uma
+       cópia e lia de novo. Cada inserção suja o layout, então a leitura
+       seguinte obrigava o navegador a recalcular tudo na hora — até 12
+       recálculos síncronos em sequência, durante o carregamento. É o
+       "reflow forçado" que o relatório aponta. */
+    const larguraGrupo = group.getBoundingClientRect().width;
+
+    // Quantos grupos cobrem 1,5x a tela (o original já está no DOM).
+    // Teto de 12 para não explodir se a medida vier zerada.
+    const porVolta = larguraGrupo > 0
+        ? Math.min(Math.max(Math.ceil((window.innerWidth * 1.5) / larguraGrupo), 1), 12)
+        : 1;
+
+    // Completa a volta — um fragmento entra no DOM de uma vez só
+    const volta = document.createDocumentFragment();
+    for (let i = 1; i < porVolta; i++) volta.appendChild(group.cloneNode(true));
+    track.appendChild(volta);
+
+    // Espelha a volta inteira: a animação de -50% fecha sem emenda
+    const espelho = document.createDocumentFragment();
+    [...track.children].forEach(el => espelho.appendChild(el.cloneNode(true)));
+    track.appendChild(espelho);
 }
 
 /* ── FAQ: um aberto de cada vez + foto de fundo travada ──────
