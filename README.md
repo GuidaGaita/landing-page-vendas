@@ -10,9 +10,12 @@ landing-page-vendas/
 ├─ index.html      → conteúdo e estrutura das seções
 ├─ styles.css      → design system completo (cores, tipografia, animações)
 ├─ scripts.js      → revelações, contadores, poeira, parallax, FAQ
+├─ obrigado.css    → folha das duas telas de pós-compra
+├─ obrigado.js     → brasas flutuantes dessas telas (só decoração)
+├─ obrigado/       → rota /obrigado — compra só do curso
+├─ obrigado-gaita/ → rota /obrigado-gaita — curso + gaita
 ├─ assets/         → fotos (masters + variantes) e fontes
-├─ tools/          → script de imagens, rodado à mão (não é build do site)
-└─ .github/workflows/deploy.yml
+└─ tools/          → script de imagens, rodado à mão (não é build do site)
 ```
 
 ## Rodar localmente
@@ -60,11 +63,14 @@ valores reais no painel do Greenn e ajuste no `index.html`.
 
 ## Endereço de publicação
 
-O `<head>` traz `canonical`, `og:url` e `og:image` fixados em
-`https://guidagaita.github.io/landing-page-vendas/`. A `og:image` precisa ser
-absoluta, senão WhatsApp e Facebook não exibem a imagem ao compartilhar o
-link. **Se um domínio próprio for configurado, essas três URLs precisam ser
-atualizadas** — junto das duas `url` dentro do JSON-LD.
+O site é servido em `https://guidagaita.com/`. Esse endereço aparece fixo em
+quatro lugares do `index.html`: `canonical`, `og:url`, `og:image` e o `url` do
+`Course` no JSON-LD. A `og:image` precisa ser absoluta, senão WhatsApp e
+Facebook não exibem a imagem ao compartilhar o link. **Se o domínio mudar, os
+quatro mudam juntos.**
+
+As outras duas `url` do JSON-LD são os links de checkout do Greenn: seguem a
+oferta, não o domínio.
 
 ## Imagens
 
@@ -154,9 +160,40 @@ seguida rode `node tools/gerar-imagens.js` para refazer as variantes, e
 commite as duas coisas. Trocar só o master não muda nada na página: ela serve
 as variantes.
 
-## Publicação (GitHub Pages)
+## Publicação
 
-1. Faça push na branch `main`.
-2. Em **Settings › Pages**, defina **Source = GitHub Actions**.
-3. O workflow `.github/workflows/deploy.yml` publica a raiz a cada push.
-4. A URL aparece em **Deployments › GitHub Pages**.
+Hospedado na **Hostinger**, servido na raiz de `https://guidagaita.com/` — a
+landing é o site inteiro, não existe subpasta.
+
+A Hostinger está ligada a este repositório e publica sozinha: o site atualiza
+quando o commit **chega ao GitHub**, ou seja, no `git push` — commit local não
+dispara nada. Não existe workflow aqui; o GitHub Pages foi desativado e o
+`deploy.yml`, removido.
+
+Como o que vai para o ar é o conteúdo versionado, valem duas consequências:
+
+- **Arquivo novo só aparece no site depois de `git add` + commit + push.**
+  Arquivo não rastreado não sobe, por mais que exista na sua máquina.
+- **O que não deve ser publicado não deve ser commitado.** Foi por isso que a
+  pasta com o modelo da página de obrigado, e seus 24 MB de foto, ficou de
+  fora do repositório.
+
+`tools/` e o próprio `README.md` acompanham o repositório e ficam alcançáveis
+pelo domínio. São inofensivos, mas não fazem parte do site.
+
+## Páginas de obrigado
+
+Duas telas de pós-compra, uma para cada oferta:
+
+| Rota | Oferta | Destaque |
+|---|---|---|
+| `/obrigado` | só o curso | retrato do professor |
+| `/obrigado-gaita` | curso + gaita | a vitrine animada das gaitas, a mesma da seção de oferta |
+
+As duas dividem `obrigado.css` e `obrigado.js`, têm `noindex` e reaproveitam
+as imagens e fontes de `assets/`. **Cada uma precisa estar cadastrada como
+URL de obrigado da oferta correspondente no painel do Greenn** — sem isso o
+comprador nunca chega nelas.
+
+A animação das gaitas é cópia da vitrine da oferta (`.offer__photos`, no
+`styles.css`). Mexeu em uma, mexa na outra.
