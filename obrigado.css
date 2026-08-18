@@ -78,6 +78,7 @@ ul { list-style: none; }
     /* Tinta */
     --bone:       #F4EBDD;
     --sand:       #B8A692;
+    --ash:        #8A7768;
 
     /* Linhas */
     --line:       rgba(232, 200, 160, .11);
@@ -490,6 +491,57 @@ body {
 
 .thanks__msg strong { color: var(--bone); font-weight: 600; }
 
+/* ── CHAMADA DO WHATSAPP (só na rota /obrigado-gaita) ────────
+   A ação principal daquela página: o endereço de entrega já veio no
+   checkout, então falta só a cor da gaita. O link leva ao chat com a
+   mensagem pronta — quem comprou clica, completa "rosa" ou "azul" e
+   envia, sem ter que explicar do que se trata. É o oposto de esperar
+   que a pessoa vá atrás do contato, ou o professor atrás dela.
+
+   Sólido e em brasa, contra o contorno discreto do "voltar para o
+   site": entre os dois botões da tela, não deve haver dúvida sobre
+   qual é o que importa. O verde do WhatsApp destoaria do entardecer
+   da página, então quem carrega o reconhecimento é o símbolo. */
+.wa-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    margin-top: clamp(1.4rem, 4vw, 1.8rem);
+    padding: .95rem 1.7rem;
+    min-height: 52px;
+    border-radius: 999px;
+    font-size: clamp(.95rem, 2.4vw, 1.02rem);
+    font-weight: 600;
+    letter-spacing: .01em;
+    color: var(--void);
+    background: linear-gradient(135deg, var(--gold-hi), var(--gold) 45%, var(--ember));
+    box-shadow: 0 10px 30px rgba(226, 98, 44, .3);
+    transition: transform .25s var(--ease-soft), box-shadow .25s var(--ease-soft);
+    opacity: 0;
+    animation: fade-up .8s var(--ease-soft) 1.3s forwards;
+}
+
+.wa-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px rgba(226, 98, 44, .42);
+}
+
+.wa-cta svg {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    fill: var(--void);
+}
+
+.wa-note {
+    margin-top: .7rem;
+    font-size: .82rem;
+    color: var(--ash);
+    opacity: 0;
+    animation: fade-up .8s var(--ease-soft) 1.45s forwards;
+}
+
 /* ── PRÓXIMOS PASSOS ─────────────────────────────────────── */
 .next {
     margin-top: clamp(1.6rem, 4.5vw, 2.2rem);
@@ -601,7 +653,8 @@ body {
 
 /* ── PONTEIRO GROSSO ─────────────────────────────────────── */
 @media (hover: none) {
-    .thanks__back:hover { transform: none; }
+    .thanks__back:hover,
+    .wa-cta:hover { transform: none; }
 }
 
 /* ── MOVIMENTO REDUZIDO ──────────────────────────────────────
