@@ -1,0 +1,623 @@
+/* ═══════════════════════════════════════════════════════════
+   GuidaGaita — Páginas de obrigado
+   Servem as rotas /obrigado (só o curso) e /obrigado-gaita
+   (curso + gaita bônus). Uma folha só para as duas: a estrutura
+   é idêntica, muda apenas o visual do topo do cartão.
+
+   Folha própria em vez do styles.css da home: aquela tem 66KB
+   pensados para uma página longa com header fixo, dock de
+   celular e revelação por rolagem — nada disso existe aqui, e
+   quem acaba de pagar merece uma tela que abre na hora. Os
+   tokens, as fontes e a animação das gaitas são os mesmos, para
+   a página não parecer de outro site.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── FONTES ──────────────────────────────────────────────────
+   Mesmos arquivos da home (assets/fonts/), servidos daqui
+   mesmo. Como esta folha vive na raiz, os caminhos relativos
+   são iguais aos do styles.css, mesmo que o HTML que a chama
+   esteja um nível abaixo (/obrigado/index.html): url() resolve
+   a partir do CSS, não do documento. */
+@font-face {
+    font-family: 'Outfit';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('assets/fonts/outfit-latin-var.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Alfa Slab One';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/alfa-slab-one-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Rye';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('assets/fonts/rye-latin.woff2') format('woff2');
+}
+
+/* ── RESET ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+img, svg { display: block; max-width: 100%; }
+img { height: auto; }
+
+/* O <picture> só escolhe o formato; quem participa do layout é o
+   <img>. Sem isto o leque das duas gaitas mediria a caixa errada,
+   exatamente como acontecia na vitrine da oferta. */
+picture { display: contents; }
+
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+
+:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+/* ── TOKENS ──────────────────────────────────────────────── */
+:root {
+    /* Terra */
+    --void:       #241A10;
+    --dust:       #2F2417;
+    --leather:    #453524;
+
+    /* Fogo */
+    --ember:      #E2622C;
+    --gold:       #E0A83E;
+    --gold-hi:    #F7CC72;
+    --rust:       #A84428;
+
+    /* Tinta */
+    --bone:       #F4EBDD;
+    --sand:       #B8A692;
+
+    /* Linhas */
+    --line:       rgba(232, 200, 160, .11);
+    --line-warm:  rgba(226, 98, 44, .26);
+
+    /* Fontes */
+    --f-poster:   'Alfa Slab One', Georgia, serif;
+    --f-wood:     'Rye', Georgia, serif;
+    --f-body:     'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Movimento */
+    --ease-soft:  cubic-bezier(.33, 1, .68, 1);
+    --pop:        cubic-bezier(.34, 1.56, .64, 1);
+
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html { min-height: 100%; }
+
+body {
+    position: relative;
+    min-height: 100vh;
+    /* svh acompanha a barra do navegador no celular; o vh acima
+       fica de reserva para quem não conhece a unidade nova. */
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.1rem, 4vw, 2.5rem);
+    background: var(--void);
+    color: var(--bone);
+    font-family: var(--f-body);
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-x: hidden;
+}
+
+/* ── FUNDO EM TRÊS CAMADAS ───────────────────────────────────
+   Foto dos trilhos (a estrada que ele acabou de comprar), banho
+   de cor animado por cima e um véu escuro por último, para o
+   texto do cartão nunca depender do trecho da foto que ficou
+   atrás dele.
+
+   Todas em `position: fixed`: viram camadas compostas à parte e
+   a rolagem do cartão em telas baixas não repinta o fundo. */
+.bg-photo {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center 62%;
+    /* Mesmo tratamento das fotos da home, para a paleta bater */
+    filter: sepia(.22) saturate(1.12) contrast(1.12) brightness(.72);
+    /* Largura de celular por padrão; o bloco de 801px troca pela
+       maior, então o celular nunca baixa a foto grande. */
+    background-image: url('assets/bg-trilhos-fallback.jpg');
+    background-image: image-set(url('assets/bg-trilhos-800.avif') type('image/avif'),
+                                url('assets/bg-trilhos-800.webp') type('image/webp'),
+                                url('assets/bg-trilhos-fallback.jpg') type('image/jpeg'));
+}
+
+@media (min-width: 801px) {
+    .bg-photo {
+        background-image: url('assets/bg-trilhos-fallback.jpg');
+        background-image: image-set(url('assets/bg-trilhos-1280.avif') type('image/avif'),
+                                    url('assets/bg-trilhos-1280.webp') type('image/webp'),
+                                    url('assets/bg-trilhos-fallback.jpg') type('image/jpeg'));
+    }
+}
+
+/* Banho de cor que passeia devagar — `multiply` tinge a foto em
+   vez de cobri-la, então o entardecer continua sendo o da foto. */
+.bg-tint {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background: linear-gradient(-45deg, var(--void), var(--leather), var(--rust), var(--void));
+    background-size: 400% 400%;
+    mix-blend-mode: multiply;
+    opacity: .6;
+    animation: tint-drift 20s ease-in-out infinite;
+}
+
+@keyframes tint-drift {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+
+/* Escurece de cima para baixo + a mesma brasa de ambiente da home */
+.bg-dark {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 100vw 62vh at 50% -8%,  rgba(226, 98, 44, .18), transparent 68%),
+        radial-gradient(ellipse 70vw 45vh at 110% 82%, rgba(224, 168, 62, .08), transparent 70%),
+        linear-gradient(180deg, rgba(36, 26, 16, .55) 0%, rgba(36, 26, 16, .68) 55%, rgba(36, 26, 16, .82) 100%);
+}
+
+/* ── TEXTURAS DE AMBIENTE (iguais às da home) ────────────── */
+.fx-grain {
+    position: fixed;
+    inset: -8%;
+    z-index: 300;
+    pointer-events: none;
+    opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 260px 260px;
+    animation: grain-drift 700ms steps(4) infinite;
+}
+
+@keyframes grain-drift {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(-3%, 2%); }
+    50%  { transform: translate(2%, -3%); }
+    75%  { transform: translate(-2%, -2%); }
+    100% { transform: translate(3%, 1%); }
+}
+
+.fx-vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 290;
+    pointer-events: none;
+    background: radial-gradient(ellipse 78% 68% at 50% 45%, transparent 42%, rgba(31, 22, 14, .32) 100%);
+}
+
+/* ── BRASAS SUBINDO ──────────────────────────────────────────
+   As partículas do modelo, na cor da fogueira. Criadas pelo
+   obrigado.js (tamanho, posição e ritmo sorteados) porque são
+   pura decoração: se o script não rodar, não falta nada. */
+.embers span {
+    position: fixed;
+    bottom: -8%;
+    z-index: 0;
+    display: block;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gold-hi), rgba(226, 98, 44, .25) 70%, transparent);
+    animation: ember-rise linear infinite;
+    pointer-events: none;
+    will-change: transform;
+}
+
+@keyframes ember-rise {
+    0%   { transform: translate3d(0, 0, 0);         opacity: 0; }
+    12%  {                                         opacity: .9; }
+    88%  {                                         opacity: .7; }
+    100% { transform: translate3d(22px, -108vh, 0); opacity: 0; }
+}
+
+/* ── O CARTÃO ────────────────────────────────────────────── */
+.thanks {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 580px;
+    text-align: center;
+    padding: clamp(2.4rem, 6vw, 3.4rem) clamp(1.3rem, 5vw, 2.6rem) clamp(2rem, 5vw, 2.8rem);
+    background: rgba(36, 26, 16, .58);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+/* Fita de brasa no topo, como no cartão da oferta */
+.thanks::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 8%;
+    right: 8%;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--ember), var(--gold-hi), var(--ember), transparent);
+    opacity: .8;
+}
+
+/* ── TOPO: RETRATO (rota /obrigado) ──────────────────────── */
+.thanks__hero {
+    opacity: 0;
+    animation: pop-in .9s var(--pop) .15s forwards;
+}
+
+.portrait {
+    position: relative;
+    width: clamp(140px, 38vw, 168px);
+    aspect-ratio: 1;
+    margin: 0 auto clamp(1.5rem, 4vw, 2rem);
+}
+
+/* Aro girando: a mesma brasa do site, em gradiente cônico */
+.portrait::before {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--rust), var(--ember), var(--gold-hi), var(--ember), var(--rust));
+    filter: blur(1px);
+    animation: spin 7s linear infinite;
+}
+
+.portrait img {
+    position: relative;
+    /* O aro é um ::before posicionado; sem z-index a foto só fica
+       na frente dele por ser a última na ordem do documento. Aqui a
+       intenção fica escrita, e não refém da ordem das tags. */
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* O rosto está na parte de cima do retrato original */
+    object-position: 50% 18%;
+    border-radius: 50%;
+    border: 4px solid var(--dust);
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes pop-in {
+    0%   { opacity: 0; transform: scale(.7) translateY(18px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── TOPO: VITRINE DAS GAITAS (rota /obrigado-gaita) ─────────
+   Mesma animação da vitrine da oferta (.offer__photos no
+   styles.css): sol girando, brasa pulsando e as duas gaitas
+   abertas em leque, flutuando fora de sincronia. Quem acabou de
+   comprar o combo reencontra aqui exatamente a imagem que viu no
+   checkout. Se mexer em uma, mexa na outra.
+   ─────────────────────────────────────────────────────────── */
+.gaitas {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 190px;
+    margin-bottom: .6rem;
+}
+
+/* "ellipse" e não "circle": a caixa é bem mais larga que alta, e
+   um circle só chegaria a transparente depois de passar do corte
+   de cima e de baixo. */
+.gaitas__glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse at center, rgba(247, 204, 114, .32) 0%, transparent 62%),
+        radial-gradient(ellipse at center, rgba(226, 98, 44, .4) 0%, rgba(224, 168, 62, .16) 42%, transparent 74%);
+    animation: gaitas-pulse 5s ease-in-out infinite;
+}
+
+@keyframes gaitas-pulse {
+    0%, 100% { transform: scale(.92); opacity: .75; }
+    50%      { transform: scale(1.08); opacity: 1; }
+}
+
+/* 20 raios de 18° (360 ÷ 18 fecha a volta sem sobra) e cada raio
+   nasce e morre em transparente, senão a borda sai serrilhada. A
+   máscara afina a ponta central e a externa. */
+.gaitas__spin {
+    position: absolute;
+    z-index: 1;
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    background:
+        repeating-conic-gradient(from 0deg,
+            transparent      0deg,
+            transparent      6deg,
+            var(--gold-hi)   9deg,
+            transparent      12deg,
+            transparent      18deg),
+        radial-gradient(circle, rgba(224, 168, 62, .18), transparent 68%);
+    -webkit-mask-image: radial-gradient(circle, transparent 22%, #000 44%, #000 78%, transparent 100%);
+            mask-image: radial-gradient(circle, transparent 22%, #000 44%, #000 78%, transparent 100%);
+    filter: drop-shadow(0 0 22px rgba(226, 98, 44, .3));
+    animation: gaitas-spin 25s linear infinite;
+}
+
+@keyframes gaitas-spin { to { transform: rotate(360deg); } }
+
+.gaitas__unit {
+    position: relative;
+    z-index: 2;
+    width: 132px;
+    height: 132px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, .55));
+}
+
+/* Durações e atraso diferentes entre as duas: balançar em
+   sincronia perfeita pareceria mecânico. */
+.gaitas__unit--rosa {
+    animation: gaita-float-rosa 4.6s ease-in-out infinite;
+}
+
+.gaitas__unit--azul {
+    z-index: 3;
+    animation: gaita-float-azul 5.4s ease-in-out infinite .4s;
+}
+
+@keyframes gaita-float-rosa {
+    0%, 100% { transform: translateX(14px) translateY(0)   rotate(-11deg); }
+    50%      { transform: translateX(14px) translateY(-7px) rotate(-7deg); }
+}
+
+@keyframes gaita-float-azul {
+    0%, 100% { transform: translateX(-14px) translateY(0)   rotate(9deg); }
+    50%      { transform: translateX(-14px) translateY(-8px) rotate(13deg); }
+}
+
+.gaitas__colors {
+    margin-bottom: clamp(1.3rem, 4vw, 1.8rem);
+    font-size: .85rem;
+    color: var(--sand);
+    opacity: 0;
+    animation: fade-up .8s var(--ease-soft) .35s forwards;
+}
+
+.gaitas__colors strong { color: var(--gold-hi); font-weight: 600; }
+
+/* ── TEXTO ───────────────────────────────────────────────── */
+.eyebrow {
+    font-family: var(--f-wood);
+    font-size: clamp(.68rem, 2.1vw, .78rem);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    line-height: 1.4;
+    opacity: 0;
+    animation: fade-up .7s var(--ease-soft) .45s forwards;
+}
+
+/* Selo de conferido antes do rótulo — o sinal de que deu certo,
+   desenhado à mão para não custar uma requisição. */
+.eyebrow__seal {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--line-warm);
+    background: rgba(226, 98, 44, .12);
+}
+
+.eyebrow__seal svg {
+    width: 11px;
+    height: 11px;
+    stroke: var(--gold);
+    fill: none;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* Risca sozinho ao abrir: 22 cobre o comprimento do traço e o
+       offset começa escondendo tudo. */
+    stroke-dasharray: 22;
+    stroke-dashoffset: 22;
+    animation: seal-draw .5s var(--ease-soft) .75s forwards;
+}
+
+@keyframes seal-draw { to { stroke-dashoffset: 0; } }
+
+.thanks__title {
+    margin-top: .9rem;
+    font-family: var(--f-poster);
+    font-weight: 400;
+    font-size: clamp(1.95rem, 6.6vw, 2.9rem);
+    line-height: 1.08;
+    letter-spacing: -.012em;
+    text-wrap: balance;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .35), 0 14px 40px rgba(0, 0, 0, .5);
+}
+
+/* Cada palavra entra por conta própria, na ordem da leitura. O
+   escalonamento vem do --i marcado no HTML, não de JavaScript:
+   sem script a manchete já está escrita e no lugar, e o navegador
+   não precisa recriar nada depois da primeira pintura. */
+.thanks__title span {
+    display: inline-block;
+    opacity: 0;
+    animation: fade-up .6s var(--ease-soft) forwards;
+    animation-delay: calc(.6s + var(--i, 0) * .11s);
+}
+
+.ink-gold {
+    color: var(--gold);
+    text-shadow: 0 0 34px rgba(224, 168, 62, .3);
+}
+
+.thanks__msg {
+    margin: clamp(1.1rem, 3.5vw, 1.5rem) auto 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 2.4vw, 1.06rem);
+    line-height: 1.72;
+    color: var(--sand);
+    opacity: 0;
+    animation: fade-up .8s var(--ease-soft) 1.15s forwards;
+}
+
+.thanks__msg strong { color: var(--bone); font-weight: 600; }
+
+/* ── PRÓXIMOS PASSOS ─────────────────────────────────────── */
+.next {
+    margin-top: clamp(1.6rem, 4.5vw, 2.2rem);
+    padding: clamp(1.1rem, 3.5vw, 1.5rem) clamp(1rem, 3.5vw, 1.4rem);
+    text-align: left;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(47, 36, 23, .5);
+    opacity: 0;
+    animation: fade-up .8s var(--ease-soft) 1.4s forwards;
+}
+
+.next__title {
+    font-family: var(--f-wood);
+    font-size: .72rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .9rem;
+}
+
+/* Mesma caixinha de conferido das listas da home */
+.checks {
+    display: flex;
+    flex-direction: column;
+    gap: .58rem;
+}
+
+.checks li {
+    position: relative;
+    padding-left: 1.75rem;
+    font-size: .92rem;
+    line-height: 1.55;
+    color: var(--sand);
+}
+
+.checks li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: .2em;
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 1px solid rgba(224, 168, 62, .3);
+    border-radius: 3px;
+    background: rgba(224, 168, 62, .08) url("data:image/svg+xml,%3Csvg width='11' height='9' viewBox='0 0 11 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.4L4 7.4L10 1' stroke='%23E0A83E' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 62% no-repeat;
+}
+
+.checks li strong { color: var(--bone); font-weight: 600; }
+
+/* ── ASSINATURA E VOLTA ──────────────────────────────────── */
+.thanks__sign {
+    margin-top: clamp(1.5rem, 4vw, 2rem);
+    font-size: .95rem;
+    color: var(--sand);
+    opacity: 0;
+    animation: fade-up .8s var(--ease-soft) 1.6s forwards;
+}
+
+.thanks__sign strong {
+    display: block;
+    margin-top: .15rem;
+    font-family: var(--f-poster);
+    font-weight: 400;
+    font-size: 1.15rem;
+    letter-spacing: -.01em;
+    color: var(--bone);
+}
+
+.thanks__back {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: clamp(1.4rem, 4vw, 1.9rem);
+    padding: .7rem 1.4rem;
+    min-height: 44px;
+    border: 1px solid var(--line-warm);
+    border-radius: 999px;
+    font-size: .86rem;
+    font-weight: 500;
+    letter-spacing: .02em;
+    color: var(--bone);
+    background: rgba(226, 98, 44, .08);
+    transition: background .25s var(--ease-soft), border-color .25s var(--ease-soft), transform .25s var(--ease-soft);
+    opacity: 0;
+    animation: fade-up .8s var(--ease-soft) 1.8s forwards;
+}
+
+.thanks__back:hover {
+    background: rgba(226, 98, 44, .18);
+    border-color: rgba(226, 98, 44, .5);
+    transform: translateY(-2px);
+}
+
+.thanks__back svg {
+    width: 15px;
+    height: 15px;
+    stroke: var(--gold);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+@keyframes fade-up {
+    0%   { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PONTEIRO GROSSO ─────────────────────────────────────── */
+@media (hover: none) {
+    .thanks__back:hover { transform: none; }
+}
+
+/* ── MOVIMENTO REDUZIDO ──────────────────────────────────────
+   Além de encurtar as animações, zera o atraso: as entradas
+   começam em opacity 0 e, sem isto, o cartão ficaria em branco
+   pelos quase dois segundos do escalonamento antes de aparecer
+   de uma vez. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+
+    .embers { display: none; }
+    .fx-grain { animation: none; }
+    .bg-tint { animation: none; }
+}

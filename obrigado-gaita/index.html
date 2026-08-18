@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#241A10" />
+    <!-- Página de destino pós-pagamento: não deve aparecer na busca,
+         nem ser rastreada. Quem chega aqui vem do checkout. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23241A10'/><rect x='4.5' y='11' width='23' height='10' rx='2.5' fill='none' stroke='%23E2622C' stroke-width='2'/><path d='M10 14.5v3M14 14.5v3M18 14.5v3M22 14.5v3' stroke='%23E0A83E' stroke-width='1.7' stroke-linecap='round'/></svg>" />
+
+    <title>Compra confirmada: curso + gaita — GuidaGaita</title>
+    <meta name="description" content="Sua compra do Método GuidaGaita com a gaita Easttop T104S está confirmada. Veja os próximos passos." />
+
+    <!-- As mesmas fontes da home, servidas daqui mesmo. O preload
+         evita que elas só sejam descobertas depois que o CSS baixa. -->
+    <link rel="preload" href="../assets/fonts/outfit-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../assets/fonts/alfa-slab-one-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="../obrigado.css" />
+</head>
+<body>
+
+<!-- Fundo: foto dos trilhos, banho de cor e véu escuro -->
+<div class="bg-photo" aria-hidden="true"></div>
+<div class="bg-tint" aria-hidden="true"></div>
+<div class="bg-dark" aria-hidden="true"></div>
+
+<!-- Brasas subindo (preenchidas pelo obrigado.js) -->
+<div class="embers" id="embers" aria-hidden="true"></div>
+
+<!-- Texturas de ambiente: grão de filme + vinheta -->
+<div class="fx-grain" aria-hidden="true"></div>
+<div class="fx-vignette" aria-hidden="true"></div>
+
+<main class="thanks">
+
+    <!-- A vitrine das gaitas do checkout, igualzinha: o sol girando,
+         a brasa pulsando e as duas cores flutuando em leque. Quem
+         comprou o combo reencontra aqui a imagem que viu na hora de
+         escolher a oferta.
+
+         Decorativa como lá (alt vazio, pai aria-hidden): o texto
+         logo abaixo e a lista de próximos passos já dizem em
+         palavras que a gaita faz parte do pedido e que a cor é
+         escolhida por você. -->
+    <div class="thanks__hero gaitas" aria-hidden="true">
+        <span class="gaitas__spin"></span>
+        <span class="gaitas__glow"></span>
+        <picture>
+            <source type="image/avif" srcset="../assets/gaita-rosa.avif">
+            <source type="image/webp" srcset="../assets/gaita-rosa.webp">
+            <img class="gaitas__unit gaitas__unit--rosa" src="../assets/gaita-rosa-fallback.png" alt="" width="780" height="780" decoding="async">
+        </picture>
+        <picture>
+            <source type="image/avif" srcset="../assets/gaita-azul.avif">
+            <source type="image/webp" srcset="../assets/gaita-azul.webp">
+            <img class="gaitas__unit gaitas__unit--azul" src="../assets/gaita-azul-fallback.png" alt="" width="780" height="780" decoding="async">
+        </picture>
+    </div>
+    <p class="gaitas__colors">Vem na cor <strong>rosa</strong> ou <strong>azul</strong> — você escolhe</p>
+
+    <p class="eyebrow">
+        <span class="eyebrow__seal" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
+        Compra confirmada
+    </p>
+
+    <!-- O --i de cada palavra é a posição dela na fila de entrada;
+         o CSS transforma isso no atraso da animação. -->
+    <h1 class="thanks__title">
+        <span style="--i:0">Agora&nbsp;</span><span style="--i:1">é&nbsp;</span><span style="--i:2">você&nbsp;</span><span class="ink-gold" style="--i:3">e&nbsp;</span><span class="ink-gold" style="--i:4">a&nbsp;</span><span class="ink-gold" style="--i:5">sua&nbsp;</span><span class="ink-gold" style="--i:6">gaita.</span>
+    </h1>
+
+    <p class="thanks__msg">
+        Obrigado por confiar em mim — e que bom que a gaita vem junto.
+        Sua confiança significa muito, e enquanto o instrumento não chega
+        o método já está te esperando: <strong>10 minutos por dia</strong>
+        bastam para você sair do zero.
+    </p>
+
+    <section class="next">
+        <h2 class="next__title">Os próximos passos</h2>
+        <ul class="checks">
+            <li>Fique de olho no seu <strong>e-mail</strong>: o acesso à área de membros chega por lá</li>
+            <li>Não encontrou? Confira a caixa de spam e a aba de promoções</li>
+            <li>Sua <strong>Easttop T104S</strong> faz parte do pedido — combino a cor e o endereço de entrega com você por e-mail</li>
+            <li>Enquanto ela não chega, já pode começar pelas <strong>primeiras aulas</strong></li>
+            <li>Entre na <strong>comunidade de alunos</strong> e me chame no suporte quando travar</li>
+            <li>Seus <strong>7 dias de garantia</strong> começam agora — sem burocracia</li>
+        </ul>
+    </section>
+
+    <p class="thanks__sign">
+        Com gratidão,
+        <strong>Guilherme Barros</strong>
+    </p>
+
+    <a class="thanks__back" href="../">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar para o site
+    </a>
+
+</main>
+
+<script src="../obrigado.js" defer></script>
+</body>
+</html>
