@@ -1,7 +1,7 @@
 # GuidaGaita — Landing Page
 
 Landing page de vendas do curso GuidaGaita. HTML, CSS e JavaScript puros, sem
-build e sem dependências: os três arquivos da raiz são o site inteiro.
+build e sem dependências: os arquivos da raiz são o site inteiro.
 
 ## Estrutura
 
@@ -10,6 +10,7 @@ landing-page-vendas/
 ├─ index.html      → conteúdo e estrutura das seções
 ├─ styles.css      → design system completo (cores, tipografia, animações)
 ├─ scripts.js      → revelações, contadores, poeira, parallax, FAQ
+├─ pixel.js        → Meta Pixel: código base e todos os eventos
 ├─ obrigado.css    → folha das duas telas de pós-compra
 ├─ obrigado.js     → brasas flutuantes dessas telas (só decoração)
 ├─ obrigado/       → rota /obrigado — compra só do curso
@@ -49,13 +50,7 @@ Google. Só faz sentido acrescentar se você passar a coletar notas de fato.
 página que recebe pagamento isso costuma ser exigido, inclusive pelo próprio
 Greenn. Crie as duas páginas e troque os `href`.
 
-### 3. Nenhuma medição instalada
-
-Não há Meta Pixel, Google Analytics nem GTM. Sem isso não dá para saber
-quantos chegaram, quantos rolaram até o preço e qual dos dois planos recebe
-mais cliques — informação essencial se a página for receber anúncios.
-
-### 4. Parcelamento é estimativa
+### 3. Parcelamento é estimativa
 
 "12x de R$ 25,39" (R$ 247) e "12x de R$ 34,64" (R$ 337) foram calculados
 aplicando a taxa de juros que o parcelamento antigo já tinha. Confirme os
@@ -173,7 +168,9 @@ dispara nada. Não existe workflow aqui; o GitHub Pages foi desativado e o
 Como o que vai para o ar é o conteúdo versionado, valem duas consequências:
 
 - **Arquivo novo só aparece no site depois de `git add` + commit + push.**
-  Arquivo não rastreado não sobe, por mais que exista na sua máquina.
+  Arquivo não rastreado não sobe, por mais que exista na sua máquina. Vale
+  principalmente para o `pixel.js`: se ele não subir, a medição some inteira
+  e nada na página avisa (veja *Medição — Meta Pixel*).
 - **O que não deve ser publicado não deve ser commitado.** Foi por isso que a
   pasta com o modelo da página de obrigado, e seus 24 MB de foto, ficou de
   fora do repositório.
@@ -197,3 +194,74 @@ comprador nunca chega nelas.
 
 A animação das gaitas é cópia da vitrine da oferta (`.offer__photos`, no
 `styles.css`). Mexeu em uma, mexa na outra.
+
+## Medição — Meta Pixel
+
+Pixel `1397849958862391` (Facebook/Instagram Ads), instalado nas três páginas.
+
+Todo o código vive em **`pixel.js`**: o snippet base da Meta e os oito
+eventos. Está num arquivo só, e não colado no `<head>` de cada página, porque
+o site não tem template — snippet copiado em três lugares é o tipo de coisa
+que alguém atualiza em dois e esquece no terceiro, e aí as páginas passam a
+medir coisas diferentes sem ninguém notar.
+
+**O ID aparece em quatro lugares:** o `pixel.js` e o `<noscript>` de cada uma
+das três páginas. O `<noscript>` não tem como sair de lá — com o JS
+desligado, nenhum arquivo `.js` roda para injetá-lo. **Se trocar o pixel,
+troque nos quatro.**
+
+### O que é medido
+
+| Evento | Página | Quando |
+|---|---|---|
+| `PageView` | as três | ao abrir |
+| `ViewContent` | home | a seção de preços entra na tela |
+| `InitiateCheckout` | home | clique num dos dois botões do Greenn, com o valor do plano |
+| `Purchase` | `/obrigado` e `/obrigado-gaita` | ao abrir, com R$ 247 ou R$ 337 |
+| `Contact` | `/obrigado-gaita` | clique no botão de WhatsApp |
+| `ScrollDepth` * | home | passou de 25, 50, 75 e 90% da página |
+| `CTAOferta` * | home | clique num dos cinco botões que levam a `#oferta`, com a origem |
+| `FAQAberta` * | home | abriu uma pergunta do FAQ, com o texto dela |
+
+`*` eventos personalizados: aparecem em relatório, mas a Meta não os usa para
+otimizar campanha. Os cinco de cima são os padrão dela.
+
+**Qual plano é qual** sai do slug do link do Greenn — `r3k5wcq` é o combo com
+a gaita (R$ 337), `6z65zng` é só o curso (R$ 247). Mudou a oferta no Greenn,
+mude o `OFERTAS` no `pixel.js`.
+
+### O `Purchase` não conta duas vezes
+
+Ele dispara ao abrir a página de obrigado, então um F5 contaria a mesma venda
+de novo — e o anúncio aprenderia com número inflado, que é pior do que não
+aprender. Duas travas: um registro em `sessionStorage` e um `eventID` mandado
+junto, para a Meta descartar duplicata do lado dela.
+
+O `eventID` usa o número da transação **se** o Greenn mandar algum na URL de
+retorno (`transaction_id`, `sale_id`, `order_id`...). Se não vier nada, cai
+num id gerado na hora — o que ainda resolve o F5, mas não a mesma pessoa
+abrindo o link de outro aparelho. Vale conferir, numa compra de teste, o que
+aparece na barra de endereço.
+
+### Conferir se está funcionando
+
+Com a extensão **Meta Pixel Helper** no Chrome, ou pelo **Gerenciador de
+Eventos → Testar Eventos**, que mostra os parâmetros ao vivo.
+
+O que vale é o teste em `https://guidagaita.com/`, não no `localhost`. E
+confira antes se `https://guidagaita.com/pixel.js` **abre**: se der 404, o
+arquivo não foi versionado e não existe medição nenhuma — sem nada na página
+avisar.
+
+### Ainda falta
+
+- **Verificar o domínio** `guidagaita.com` no Gerenciador de Negócios da Meta.
+  Sem isso o iOS limita a atribuição e o `Purchase` chega capado.
+- **Conferir no Greenn** se `/obrigado` e `/obrigado-gaita` estão cadastradas
+  como URL de obrigado de cada oferta. Sem isso o comprador nunca chega lá, e
+  o `Purchase` nunca dispara.
+- **API de Conversões (CAPI)** — pixel no navegador perde de 20 a 30% para
+  bloqueador de anúncio e iOS. A correção é o Greenn mandar a venda servidor
+  a servidor; precisa de integração lá, não dá para fazer daqui.
+- **Consentimento (LGPD)** — hoje o pixel dispara direto, sem banner. Faz par
+  com a Política de Privacidade, que é a pendência 2 lá em cima.

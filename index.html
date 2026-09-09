@@ -37,6 +37,15 @@
     <link rel="preload" href="assets/fonts/alfa-slab-one-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="styles.css" />
 
+    <!-- Meta Pixel — o código base e os eventos vivem no pixel.js.
+         O <noscript> precisa ficar aqui: com o JS desligado nenhum
+         arquivo .js roda para injetá-lo. É por isso que o ID do
+         pixel aparece em quatro lugares (o pixel.js e os três
+         <noscript>) — se trocar o pixel, troque nos quatro. -->
+    <script src="pixel.js" async></script>
+    <noscript><img height="1" width="1" style="display:none" alt=""
+        src="https://www.facebook.com/tr?id=1397849958862391&amp;ev=PageView&amp;noscript=1" /></noscript>
+
     <!-- Dados estruturados: descrevem o curso e os dois planos para o
          Google, que pode então mostrar preço e formato direto no
          resultado de busca.
