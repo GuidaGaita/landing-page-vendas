@@ -9,7 +9,7 @@ build e sem dependências: os arquivos da raiz são o site inteiro.
 landing-page-vendas/
 ├─ index.html      → conteúdo e estrutura das seções
 ├─ styles.css      → design system completo (cores, tipografia, animações)
-├─ scripts.js      → revelações, contadores, poeira, parallax, FAQ
+├─ scripts.js      → revelações, contadores, parallax, FAQ, parâmetros de campanha
 ├─ pixel.js        → Meta Pixel: código base e todos os eventos
 ├─ obrigado.css    → folha das duas telas de pós-compra
 ├─ obrigado.js     → brasas flutuantes dessas telas (só decoração)
@@ -242,6 +242,45 @@ retorno (`transaction_id`, `sale_id`, `order_id`...). Se não vier nada, cai
 num id gerado na hora — o que ainda resolve o F5, mas não a mesma pessoa
 abrindo o link de outro aparelho. Vale conferir, numa compra de teste, o que
 aparece na barra de endereço.
+
+### Os parâmetros de campanha seguem até o checkout
+
+A venda não acontece aqui — acontece no `payfast.greenn.com.br`, que é outro
+domínio. Se a origem não for junto no link, quem chega pelo anúncio cai num
+checkout que não sabe de onde veio, e o relatório do Greenn não diz qual
+campanha vendeu.
+
+Quem resolve é o `setupCheckoutParams()`, no `scripts.js`: na carga da página
+ele reescreve o `href` dos dois botões do Greenn somando os parâmetros de
+rastreamento que vieram na URL.
+
+```
+guidagaita.com/?utm_source=ig&utm_campaign=set&fbclid=ABC&cupom=METADE
+                              ↓
+payfast.greenn.com.br/r3k5wcq/offer/Xl6vxa
+    ?ch_id=141821&b_id_1=jfgn4jm                 ← intactos
+    &utm_source=ig&utm_campaign=set&fbclid=ABC   ← somados
+                                 cupom fica de fora
+```
+
+**Passa só o que é rastreamento:** qualquer `utm_*`, mais os identificadores
+de clique das plataformas de anúncio (`fbclid`, `gclid`, `gbraid`, `wbraid`,
+`ttclid`, `msclkid`, `igshid`) e os campos livres do Greenn (`src`, `sck`,
+`ref`).
+
+Repassar a query inteira seria mais simples, mas deixaria qualquer um forjar
+uma URL da landing e injetar parâmetro na página de pagamento — cupom,
+prefill, o que o Greenn aceitasse. Pela mesma razão **o que já está no link
+vence**: abrir a landing com `?ch_id=999` não muda o `ch_id` da oferta.
+
+**Plataforma de anúncio nova?** Some o click id dela à lista `RASTREIO`, logo
+acima da função, no `scripts.js`. É uma linha.
+
+O `href` é reescrito na carga, e não no clique, para que abrir em nova aba,
+copiar o endereço e o clique do meio do mouse levem os parâmetros também.
+
+As duas URLs iguais no JSON-LD do `index.html` ficam de fora de propósito: são
+dados estruturados para o Google, não links.
 
 ### Conferir se está funcionando
 

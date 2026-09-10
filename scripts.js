@@ -357,6 +357,62 @@ function setupFAQ() {
     }, { passive: true });
 }
 
+/* ── Parâmetros de campanha até o checkout ───────────────────
+   O pixel mede o funil aqui dentro, mas a venda acontece no
+   payfast.greenn.com.br — outro domínio. Sem repassar a origem
+   no próprio link, quem chega por anúncio cai num checkout que
+   não sabe de onde veio, e o relatório do Greenn não diz qual
+   campanha vendeu.
+
+   Passa só o que é rastreamento. Repassar a query inteira
+   deixaria qualquer um forjar uma URL da landing e injetar
+   parâmetro na página de pagamento — cupom, prefill, o que o
+   Greenn aceitasse.
+   ─────────────────────────────────────────────────────────── */
+
+/* O prefixo `utm_` cobre source, medium, campaign, content, term
+   e qualquer variante nova sem precisar mexer aqui. O resto são
+   os identificadores de clique de cada plataforma de anúncio,
+   mais os campos livres que o Greenn lê. Plataforma nova? Some
+   o click id dela nesta lista. */
+const RASTREIO = [
+    'fbclid',                     // Meta — Facebook e Instagram
+    'gclid', 'gbraid', 'wbraid',  // Google Ads (os dois últimos, iOS)
+    'ttclid',                     // TikTok
+    'msclkid',                    // Microsoft / Bing
+    'igshid',                     // Instagram
+    'src', 'sck', 'ref'           // campos livres do Greenn
+];
+
+const ehRastreio = chave => {
+    const k = chave.toLowerCase();
+    return k.startsWith('utm_') || RASTREIO.includes(k);
+};
+
+function setupCheckoutParams() {
+    const entrada = new URLSearchParams(location.search);
+    if (!entrada.toString()) return;
+
+    // Reescreve o href na carga, e não no clique: assim abrir em
+    // nova aba, copiar o endereço e o clique do meio levam os
+    // parâmetros também — um handler de clique só pegaria o
+    // clique comum.
+    document.querySelectorAll('a[href*="payfast.greenn.com.br"]').forEach(link => {
+        const destino = new URL(link.href);
+
+        entrada.forEach((valor, chave) => {
+            if (!ehRastreio(chave)) return;
+            // O que já está no link é configuração da oferta
+            // (ch_id, b_id_1) e manda. Parâmetro de URL não
+            // sobrescreve oferta.
+            if (destino.searchParams.has(chave)) return;
+            destino.searchParams.set(chave, valor);
+        });
+
+        link.href = destino.toString();
+    });
+}
+
 /* ── Partida ─────────────────────────────────────────────── */
 function boot() {
     setupReveal();
@@ -367,6 +423,7 @@ function boot() {
     setupDock();
     setupTicker();
     setupFAQ();
+    setupCheckoutParams();
 }
 
 if (document.readyState === 'loading') {
