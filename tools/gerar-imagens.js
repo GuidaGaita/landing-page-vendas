@@ -31,12 +31,18 @@ const ASSETS = path.join(__dirname, '..', 'assets');
 const FOTOS = [
   // arquivo             larguras                webpQ avifQ  larguraDoFallback
   ['hero-duelo.jpg',     [480, 768, 1200, 1800], 66,   50,    1200],
+  // Pôster da VSL (9:16): é o LCP da página, por isso qualidade de foto
+  // nítida. Aparece com ~300-360px de largura, então 720 cobre tela 2x
+  // e 1080 a 3x. O master sai de um frame do VSL.mp4 (ver README, "VSL").
+  ['vsl-poster.jpg',     [480, 720, 1080],       64,   48,     720],
   ['etapa-folego.jpg',   [640],                  62,   46,     640],
   ['etapa-dominio.jpg',  [640],                  62,   46,     640],
   ['etapa-estrada.jpg',  [640],                  62,   46,     640],
   ['mentor.jpg',         [520],                  64,   48,     520],
   ['bg-vagao.jpg',       [800, 1280],            42,   36,    1280],
-  ['bg-trilhos.jpg',     [800, 1280],            42,   36,    1280],
+  // bg-trilhos.jpg é reserva: o master fica em assets/, mas a página não
+  // usa a foto e as variantes foram apagadas. Descomente se ela voltar.
+  // ['bg-trilhos.jpg',  [800, 1280],            42,   36,    1280],
   ['bg-vagoes.jpg',      [800, 1280],            42,   36,    1280],
   ['bg-encarando.jpg',   [800, 1280],            42,   36,    1280],
   ['bg-trem.jpg',        [800, 1280],            42,   36,    1280],

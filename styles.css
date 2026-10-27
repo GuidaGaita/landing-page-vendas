@@ -77,7 +77,11 @@ ul, ol { list-style: none; }
     /* Tinta */
     --bone:       #F4EBDD;
     --sand:       #B8A692;
-    --ash:        #8A7768;
+    /* O cinza era #8A7768: 4,0:1 sobre o fundo e 2,8:1 dentro dos
+       cartões, abaixo do mínimo de 4,5:1 para texto pequeno. Este dá
+       5,6:1 sobre o fundo; dentro de cartão, o texto miúdo usa --sand
+       (5,0:1 sobre o couro). */
+    --ash:        #A39080;
 
     /* Linhas */
     --line:       rgba(232, 200, 160, .11);
@@ -115,17 +119,15 @@ body {
     font-weight: 400;
     line-height: 1.65;
     overflow-x: hidden;
-    /* Texto não selecionável em toda a página — sem campos de
-       formulário aqui, não há nada que precise ficar selecionável,
-       e assim o cursor também para de virar "I" ao passar por cima
-       do texto. */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-    cursor: default;
     /* Espaço para a barra fixa do celular não cobrir o rodapé */
     padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px));
 }
+
+/* O texto é selecionável de propósito (a página já teve user-select:
+   none no body): quem quer copiar o preço, o nome da gaita ou uma
+   pergunta do FAQ consegue, e leitor de tela e tradutor automático
+   também. A seleção só ganha a cor da brasa. */
+::selection { background: rgba(226, 98, 44, .38); color: var(--bone); }
 
 /* Brilho ambiente: sol poente no topo, brasa no rodapé.
 
@@ -203,7 +205,14 @@ body::before {
    ─────────────────────────────────────────────────────────── */
 .has-bg {
     position: relative;
+    /* `clip`, não `hidden`: hidden cria um contêiner de rolagem, e aí
+       as linhas do tempo de rolagem (a deriva da foto no desktop e a
+       "foto que revela") passam a medir a foto dentro da seção, que
+       nunca rola — o efeito congela no meio do curso. `clip` recorta
+       igual sem criar contêiner; `hidden` fica de fallback para quem
+       não entende `clip`, que também não entende linha do tempo. */
     overflow: hidden;
+    overflow: clip;
 }
 
 .section-bg {
@@ -325,6 +334,26 @@ body::before {
 /* Reenquadra a mesma foto quando ela se repete em outra seção */
 .section-bg--alto { background-position: center 28%; }
 
+/* ── Fundos no celular: faixa, não fatia ──────────────────────
+   Em tela estreita as seções ficam muito mais altas que largas, e
+   `cover` esticava a foto até sobrar uma fatia irreconhecível — na
+   seção do problema, um pedaço de camisa com a cabeça cortada. Aqui
+   a foto vira uma faixa no topo da seção, com o enquadramento
+   natural, e derrete no escuro; o resto da seção fica sobre o fundo
+   liso. Seção baixa (garantia, rodapé) não chega a 150vw e continua
+   inteira, como antes. O FAQ não trava mais a altura do fundo aqui:
+   a faixa já tem altura fixa (ver setupFAQ no scripts.js). */
+@media (max-width: 939.98px) {
+    .section-bg {
+        height: min(100%, 150vw);
+        -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    }
+
+    /* Na faixa, a figura sentada fica à direita do quadro */
+    .section-bg--vagao { background-position: 74% 38%; }
+}
+
 /* Intensidade seção a seção — fotos mais presentes, véu mais leve */
 .section--problema { --bg-op: .82; --veu: .50; }
 .section--trilha   { --bg-op: .66; --veu: .58; }
@@ -335,6 +364,81 @@ body::before {
 .section--faq      { --bg-op: .58; --veu: .62; }
 .section--final    { --bg-op: .76; --veu: .46; }
 .site-footer       { --bg-op: .48; --veu: .68; }
+
+/* ── FOTO QUE REVELA ──────────────────────────────────────────
+   Cada foto de fundo (e a do hero) entra em sépia monocromática e
+   "revela" a cor conforme sobe pela tela, como papel fotográfico
+   no banho; ao sair pelo topo, volta ao sépia. São duas camadas
+   dentro do próprio elemento (herdam opacidade, véu e máscara),
+   pintadas com um tom sépia em mix-blend-mode: multiply — tinge E
+   escurece. Era "color" (só tira a cor), mas por baixo do véu
+   escuro a diferença passava batida; o olho percebe luz muito mais
+   que saturação, então a foto agora entra escura e amarronzada e
+   clareia até a cor cheia:
+
+   ::before  a de entrada — opaca quando a foto começa a entrar por
+             baixo, transparente quando acabou de entrar
+             (animation-range: entry);
+   ::after   a de saída — o inverso, enquanto a foto sai por cima
+             (animation-range: exit).
+
+   Só opacity, por linha do tempo de rolagem, sem JS. Sem suporte
+   (Firefox, iPhone antes do iOS 26) a camada de entrada fica num
+   sépia leve e fixo; com movimento reduzido, idem. --sepia regula a
+   força (1 = monocromático de verdade) e --sepia-cor, o tom. */
+.section-bg,
+.hero__photo {
+    view-timeline: --foto block;
+    --sepia: 1;
+    /* Em multiply, o tom é um multiplicador: este deixa ~70% da luz
+       no vermelho e ~45% no azul — sépia escuro, sem virar preto. */
+    --sepia-cor: #B8946A;
+}
+
+.section-bg::before,
+.section-bg::after,
+.hero__photo::before,
+.hero__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--sepia-cor);
+    mix-blend-mode: multiply;
+    opacity: 0;
+}
+
+/* Parado (sem linha do tempo de rolagem, ou com movimento reduzido):
+   um sépia leve e fixo, ainda um filtro rústico — só não revela. */
+.section-bg::before,
+.hero__photo::before { opacity: .45; }
+
+@supports (animation-timeline: view()) {
+    .section-bg::before,
+    .hero__photo::before {
+        animation: foto-entra linear both;
+        animation-timeline: --foto;
+        animation-range: entry 0% entry 85%;
+    }
+
+    .section-bg::after,
+    .hero__photo::after {
+        animation: foto-sai linear both;
+        animation-timeline: --foto;
+        animation-range: exit 15% exit 100%;
+    }
+}
+
+@keyframes foto-entra {
+    from { opacity: var(--sepia, 1); }
+    to   { opacity: 0; }
+}
+
+@keyframes foto-sai {
+    from { opacity: 0; }
+    to   { opacity: var(--sepia, 1); }
+}
 
 /* ── TIPOGRAFIA ──────────────────────────────────────────── */
 .eyebrow {
@@ -384,7 +488,9 @@ body::before {
     text-shadow: 0 0 34px rgba(224, 168, 62, .28);
 }
 
-.ink-rust { color: var(--rust); }
+/* Não usa --rust: 2,9:1 sobre o fundo, abaixo dos 3:1 de título. Um
+   ferrugem um pouco mais claro dá 3,9:1 e mantém o tom queimado. */
+.ink-rust { color: #C4573A; }
 
 .prose {
     max-width: 62ch;
@@ -516,6 +622,18 @@ strong { color: var(--bone); font-weight: 600; }
    equivalente ao trajeto de -140% a 150% que havia antes. */
 @keyframes sheen { to { transform: skewX(-18deg) translateX(527%); } }
 
+/* O mesmo reflexo, uma única vez, 1 s depois de o botão entrar na
+   tela: chama o olho e para. Keyframes com outro nome de propósito —
+   se fosse o mesmo `sheen`, o navegador não reiniciaria a animação no
+   hover depois dela ter rodado. A regra de hover abaixo precisa
+   existir com esta especificidade para vencer a de cima. */
+@keyframes sheen-once { to { transform: skewX(-18deg) translateX(527%); } }
+
+.js .btn--solid.reveal.is-in::after { animation: sheen-once .9s var(--ease-soft) 1s 1; }
+
+.js .btn--solid.reveal.is-in:hover::after,
+.js .btn--solid.reveal.is-in:focus-visible::after { animation: sheen .85s var(--ease-soft); }
+
 .btn--solid:hover {
     transform: translateY(-3px);
     background-position: 100% 100%;
@@ -570,19 +688,7 @@ strong { color: var(--bone); font-weight: 600; }
 .btn--link:hover { color: var(--gold-hi); }
 .btn--link:hover::before { width: calc(100% - .4rem); }
 
-.btn__play {
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    border: 1px solid currentColor;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.btn__play svg { width: 13px; height: 13px; margin-left: 1px; }
-
-.btn--sm   { padding: .6rem 1.15rem; min-height: 42px; font-size: .85rem; }
+.btn--sm  { padding: .6rem 1.15rem; min-height: 42px; font-size: .85rem; }
 .btn--lg   { padding: 1.25rem 2.8rem; min-height: 62px; font-size: clamp(1rem, 2.6vw, 1.12rem); }
 .btn--block { display: flex; width: 100%; }
 
@@ -680,6 +786,28 @@ strong { color: var(--bone); font-weight: 600; }
    ruído constante no canto do olho. */
 .btn--dock::before { animation: none; opacity: .3; }
 
+/* ...então ela pisca só em dois momentos: ao chegar na trilha e nos
+   depoimentos (classe ligada pelo setupDockFlash, no scripts.js, uma
+   vez em cada). É o mesmo reflexo do botão do hero, duas vezes, mais a
+   brasa acendendo e um leve inchar — tudo opacity, transform e scale. */
+.btn--dock.is-flashing { animation: dock-pop 1.8s var(--ease-soft) 1; }
+.btn--dock.is-flashing::before { animation: dock-blink 1.8s ease-in-out 1; }
+.btn--dock.is-flashing::after { animation: sheen .9s var(--ease-soft) 2; }
+
+@keyframes dock-pop {
+    0%, 100% { scale: 1; }
+    14%      { scale: 1.045; }
+    28%      { scale: 1; }
+    56%      { scale: 1.045; }
+    70%      { scale: 1; }
+}
+
+@keyframes dock-blink {
+    0%, 100% { opacity: .3; }
+    14%, 56% { opacity: 1; }
+    32%, 74% { opacity: .35; }
+}
+
 /* ── MOLDURA TINTYPE ─────────────────────────────────────── */
 .tintype {
     position: relative;
@@ -756,36 +884,33 @@ strong { color: var(--bone); font-weight: 600; }
 /* ── 1. HERO ─────────────────────────────────────────────── */
 .hero {
     position: relative;
-    min-height: 100svh;
-    display: flex;
-    /* No celular o texto encosta embaixo para a foto respirar em cima */
-    align-items: flex-end;
-    padding-block: 5rem 4.5rem;
+    padding-block: 4.5rem 3.25rem;
+    /* clip, não hidden — mesmo motivo do .has-bg */
     overflow: hidden;
+    overflow: clip;
 }
 
-/* A foto do duelo ocupa o topo do hero e derrete no fundo escuro.
-   Recorte 5:4 em vez de tela cheia: numa tela estreita, "cover"
-   fecharia tanto o enquadramento que sobraria só o rosto e o
-   duelo — que é a ideia inteira da imagem — se perderia. */
+/* A foto do duelo virou ambiente: cobre o hero inteiro, escurecida
+   pelo véu, atrás da VSL. Antes ela era a protagonista da primeira
+   tela (recorte 5:4 no topo, no celular; coluna da direita, no
+   desktop); agora esse lugar é do vídeo, e a foto segue inteira na
+   chamada final e na imagem de compartilhamento. */
 .hero__photo {
     position: absolute;
-    inset: 0 0 auto;
+    inset: 0;
     z-index: 0;
-    -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent 97%);
-    mask-image: linear-gradient(to bottom, #000 50%, transparent 97%);
 }
 
 .hero__photo img {
     width: 100%;
-    height: auto;
-    aspect-ratio: 5 / 4;
+    height: 100%;
     object-fit: cover;
-    object-position: center 24%;
+    object-position: center 30%;
     filter: sepia(.2) saturate(1.06) contrast(1.04) brightness(.86);
 }
 
-/* Véu que garante a leitura do texto sobre a foto */
+/* Véu que garante a leitura sobre a foto — mais fechado que antes,
+   porque a foto é textura e o vídeo é o conteúdo. */
 .hero__scrim {
     position: absolute;
     inset: 0;
@@ -793,11 +918,11 @@ strong { color: var(--bone); font-weight: 600; }
     pointer-events: none;
     background:
         linear-gradient(to bottom,
-            rgba(36, 26, 16, .14) 0%,
-            rgba(36, 26, 16, .28) 26%,
-            rgba(36, 26, 16, .78) 44%,
-            var(--void) 62%),
-        linear-gradient(to top, rgba(226, 98, 44, .11), transparent 48%);
+            rgba(36, 26, 16, .56) 0%,
+            rgba(36, 26, 16, .7) 36%,
+            rgba(36, 26, 16, .9) 72%,
+            var(--void) 100%),
+        linear-gradient(to top, rgba(226, 98, 44, .1), transparent 48%);
 }
 
 .hero__dust {
@@ -810,39 +935,47 @@ strong { color: var(--bone); font-weight: 600; }
     opacity: .95;
 }
 
+/* Grid de áreas nomeadas. No celular, uma coluna na ordem manchete →
+   vídeo → subtítulo → CTA: quem chega vê o vídeo logo abaixo do
+   título. No desktop (bloco de 940px) o vídeo ocupa a coluna da
+   direita inteira e o texto fica à esquerda. */
 .hero__grid {
     position: relative;
     z-index: 3;
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.9rem;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+        "copy"
+        "media"
+        "sub"
+        "cta";
+    gap: 1.5rem;
     align-items: center;
 }
 
-.hero__copy {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
+.hero__copy  { grid-area: copy;  display: flex; flex-direction: column; align-items: flex-start; }
+.hero__media { grid-area: media; min-width: 0; }
+.hero__sub   { grid-area: sub; }
+.hero__cta   { grid-area: cta;   display: flex; flex-direction: column; align-items: flex-start; }
 
 .hero__title {
     font-family: var(--f-poster);
     font-weight: 400;
-    font-size: clamp(2.3rem, 8.6vw, 4.15rem);
+    font-size: clamp(2rem, 7.8vw, 4.15rem);
     line-height: 1.03;
     letter-spacing: -.015em;
     color: var(--bone);
     text-wrap: balance;
-    margin-bottom: 1.35rem;
     text-shadow: 0 2px 0 rgba(0, 0, 0, .4), 0 18px 50px rgba(0, 0, 0, .6);
+    /* O sublinhado da parte dourada espera as palavras acabarem de entrar */
+    --ink-d: 1100ms;
 }
 
 .hero__sub {
     max-width: 46ch;
-    font-size: clamp(1.02rem, 2.7vw, 1.15rem);
+    font-size: clamp(1rem, 2.6vw, 1.12rem);
     line-height: 1.7;
     color: var(--sand);
-    margin-bottom: 1.6rem;
     text-shadow: 0 1px 14px rgba(0, 0, 0, .85);
 }
 
@@ -851,20 +984,20 @@ strong { color: var(--bone); font-weight: 600; }
     flex-wrap: wrap;
     align-items: center;
     gap: 1rem 1.6rem;
-    margin-bottom: 2rem;
     width: 100%;
 }
 
 .hero__actions .btn--solid { flex: 1 1 260px; max-width: 380px; }
 
 /* Números de prova — no celular a faixa rolante logo abaixo repete os
-   mesmos dados, então some daqui para sobrar altura à foto do duelo. */
+   mesmos dados, então some daqui para sobrar altura ao vídeo. */
 .stats {
     display: none;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.1rem 1.5rem;
     width: 100%;
     max-width: 430px;
+    margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--line);
 }
@@ -889,48 +1022,140 @@ strong { color: var(--bone); font-weight: 600; }
     color: var(--ash);
 }
 
-/* Indicador de rolagem */
-.scroll-hint {
-    position: absolute;
-    left: 50%;
-    bottom: 6.5rem;
-    z-index: 3;
-    display: none;
-    width: 26px;
-    height: 44px;
-    transform: translateX(-50%);
+/* ── VSL ─────────────────────────────────────────────────────
+   Moldura tintype (a mesma dos retratos) com o vídeo vertical
+   dentro. A fachada é o pôster + botão de play; o <video> fica
+   atrás, sem baixar nada (preload="none") até o clique — ver
+   setupVSL() no scripts.js.
+   ─────────────────────────────────────────────────────────── */
+.vsl {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
-.scroll-hint__line {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: 1px;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent, var(--line-warm), transparent);
+/* Largura presa à altura da tela: um 9:16 na largura toda do celular
+   teria 640px de altura e empurraria o CTA para fora da primeira
+   tela. 64svh deixa o botão aparecer logo abaixo. Os 18px são a
+   moldura (9px de cada lado). */
+.vsl__frame {
+    width: min(100%, calc(64svh * 9 / 16 + 18px));
+    padding: 9px;
+    border-radius: 6px;
+}
+
+/* A vinheta de chapa antiga não entra por cima do vídeo */
+.vsl__frame::after { display: none; }
+
+.vsl__inner {
+    position: relative;
+    aspect-ratio: 9 / 16;
     overflow: hidden;
+    border-radius: 3px;
+    background: #0E0905;
 }
 
-.scroll-hint__line::after {
+.vsl__video,
+.vsl__inner .vsl__poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+/* O pôster é foto nítida, não chapa: sem sépia nem zoom no hover
+   (as regras de .tintype img valeriam para ele). */
+.vsl__inner .vsl__poster,
+.vsl__frame:hover .vsl__poster {
+    filter: none;
+    transform: none;
+    transition: opacity .45s var(--ease-soft), visibility 0s linear .45s;
+}
+
+.vsl__play {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(36, 26, 16, 0) 35%, rgba(36, 26, 16, .5) 100%);
+    transition: opacity .45s var(--ease-soft), visibility 0s linear .45s;
+}
+
+.vsl__play-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    color: #1A0C04;
+    background: linear-gradient(158deg, var(--gold-hi) 0%, var(--ember) 58%, var(--rust) 100%);
+    box-shadow:
+        0 1px 0 rgba(255, 235, 200, .4) inset,
+        0 14px 40px rgba(226, 98, 44, .5),
+        0 2px 6px rgba(0, 0, 0, .5);
+    transition: transform .35s var(--ease);
+}
+
+.vsl__play-icon svg {
+    width: 36px;
+    height: 36px;
+    margin-left: 4px;
+    fill: currentColor;
+}
+
+/* Anel que pulsa para fora: só opacity e transform */
+.vsl__play-icon::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -1px;
-    width: 3px;
-    height: 14px;
-    border-radius: 2px;
-    background: var(--ember);
-    box-shadow: 0 0 12px var(--ember);
-    animation: hint-fall 2.4s var(--ease-soft) infinite;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid rgba(247, 204, 114, .7);
+    animation: play-pulse 2.2s var(--ease-soft) infinite;
 }
 
-/* Desce por transform em vez de `top`: mover `top` refaz o layout a
-   cada quadro; transform roda no compositor. */
-@keyframes hint-fall {
-    0%        { transform: translateY(-16px); opacity: 0; }
-    22%       { opacity: 1; }
-    78%       { opacity: 1; }
-    100%      { transform: translateY(46px); opacity: 0; }
+@keyframes play-pulse {
+    0%   { transform: scale(.9); opacity: .8; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.vsl__play:hover .vsl__play-icon,
+.vsl__play:focus-visible .vsl__play-icon { transform: scale(1.08); }
+
+/* O botão de play pousa depois do pôster, com um pulinho */
+.js .vsl.reveal .vsl__play-icon {
+    scale: .7;
+    transition: scale .5s cubic-bezier(.2, 1.4, .4, 1) calc(var(--d, 0ms) + 350ms), transform .35s var(--ease);
+}
+.js .vsl.reveal.is-in .vsl__play-icon { scale: 1; }
+
+.vsl__play-text {
+    padding: .45rem .9rem;
+    font-family: var(--f-wood);
+    font-size: .72rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--bone);
+    background: rgba(36, 26, 16, .62);
+    border: 1px solid var(--line-warm);
+    border-radius: 40px;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, .8);
+}
+
+/* Deu play: pôster e botão somem; fica o vídeo com os controles nativos */
+.vsl.is-playing .vsl__play,
+.vsl.is-playing .vsl__inner .vsl__poster {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* ── 2. FAIXA ROLANTE ────────────────────────────────────── */
@@ -1204,7 +1429,7 @@ strong { color: var(--bone); font-weight: 600; }
 
 .quote__who span { display: flex; flex-direction: column; line-height: 1.35; }
 .quote__who strong { font-size: .93rem; color: var(--bone); }
-.quote__who small  { font-size: .78rem; color: var(--ash); }
+.quote__who small  { font-size: .78rem; color: var(--sand); }
 
 /* ── 7. MENTOR ───────────────────────────────────────────── */
 .mentor {
@@ -1261,6 +1486,11 @@ strong { color: var(--bone); font-weight: 600; }
 .offer {
     position: relative;
     width: 100%;
+    /* Em coluna única (até 939px) o cartão não estica até os 980px do
+       grid: a vitrine de 132px ficava perdida no meio de um cartão de
+       tablet. No desktop o limite sai (ver o bloco de 940px). */
+    max-width: 560px;
+    margin-inline: auto;
     padding: 2.1rem 1.6rem 1.9rem;
     background: linear-gradient(168deg, var(--leather-2), var(--leather) 60%, #2F2318);
     border: 1px solid rgba(224, 168, 62, .28);
@@ -1296,11 +1526,6 @@ strong { color: var(--bone); font-weight: 600; }
         0 38px 96px rgba(0, 0, 0, .7),
         0 0 70px rgba(224, 168, 62, .2);
 }
-
-/* Reserva espaço pro selo não cair por cima da primeira linha do
-   título em cartões estreitos (celular) */
-.offer--featured .offer__title,
-.offer--featured .offer__name { padding-right: 6.5rem; }
 
 .offer__badge {
     position: absolute;
@@ -1483,23 +1708,6 @@ strong { color: var(--bone); font-weight: 600; }
     letter-spacing: -.01em;
 }
 
-.offer__anchor {
-    display: flex;
-    align-items: baseline;
-    gap: .5rem;
-    margin-bottom: .8rem;
-    font-size: .82rem;
-    color: var(--ash);
-}
-
-.offer__anchor s {
-    font-size: 1.02rem;
-    font-weight: 700;
-    color: var(--sand);
-    text-decoration-color: var(--rust);
-    text-decoration-thickness: 2px;
-}
-
 .offer__price {
     display: flex;
     align-items: center;
@@ -1512,12 +1720,14 @@ strong { color: var(--bone); font-weight: 600; }
 
 .offer__parcel, .offer__cash { display: flex; flex-direction: column; gap: .1rem; }
 
+/* Texto miúdo dentro do cartão de couro usa --sand, não --ash: é o
+   que fecha os 4,5:1 de contraste sobre esse fundo. */
 .offer__small {
     font-size: .75rem;
     font-weight: 500;
     letter-spacing: .08em;
     text-transform: uppercase;
-    color: var(--ash);
+    color: var(--sand);
 }
 
 .offer__big {
@@ -1536,7 +1746,7 @@ strong { color: var(--bone); font-weight: 600; }
 
 .offer__or {
     font-size: .82rem;
-    color: var(--ash);
+    color: var(--sand);
     align-self: center;
 }
 
@@ -1559,7 +1769,7 @@ strong { color: var(--bone); font-weight: 600; }
     margin-top: .9rem;
     text-align: center;
     font-size: .78rem;
-    color: var(--ash);
+    color: var(--sand);
 }
 
 /* ── 9. GARANTIA ─────────────────────────────────────────── */
@@ -1688,6 +1898,7 @@ strong { color: var(--bone); font-weight: 600; }
 .section--final {
     position: relative;
     overflow: hidden;
+    overflow: clip;
     padding-block: clamp(5.5rem, 13vw, 9.5rem);
     border-top: 1px solid var(--line);
 }
@@ -1755,22 +1966,158 @@ strong { color: var(--bone); font-weight: 600; }
 
 .site-footer__nav a:hover { color: var(--gold); }
 
-/* ── REVELAÇÃO AO ROLAR ──────────────────────────────────── */
-/* Só esconde se o JS estiver vivo — sem JS, tudo aparece normalmente. */
+/* ── REVELAÇÃO AO ROLAR ──────────────────────────────────────
+   Vocabulário de entradas. Todas disparam pelo mesmo
+   IntersectionObserver do scripts.js (classe .is-in) e só existem
+   com o JS vivo (.js no <html>): sem script, tudo aparece de uma
+   vez. Só opacity, clip-path e as propriedades individuais de
+   transformação (translate, scale, rotate) — nada que obrigue o
+   navegador a refazer layout. As individuais, e não `transform`,
+   de propósito: assim o hover dos cartões (que usa transform)
+   continua funcionando depois da entrada.
+
+   .reveal          fade + 13px para cima (padrão)
+   .reveal--words   cada .w sobe na vez dele (--i)
+   .reveal--stamp   carimbo: pousa de cima com leve giro
+   .reveal--wipe    cortina da esquerda para a direita
+   .reveal--side    entra de lado; ímpar da esquerda, par da direita
+   .checks--stagger lista que vai se marcando, item a item
+   ─────────────────────────────────────────────────────────── */
 .js .reveal {
     opacity: 0;
-    transform: translateY(13px);
+    /* --dy: quanto sobe ao entrar. 13px para texto; blocos altos pedem
+       mais (ver .trail .card abaixo), senão a entrada passa batida. */
+    translate: 0 var(--dy, 13px);
     transition:
         opacity .42s var(--ease-soft) var(--d, 0ms),
-        transform .42s var(--ease-soft) var(--d, 0ms);
-    will-change: opacity, transform;
+        translate .42s var(--ease-soft) var(--d, 0ms);
 }
 
 .js .reveal.is-in {
     opacity: 1;
-    transform: none;
-    will-change: auto;
+    translate: none;
 }
+
+/* Os cartões das etapas são .reveal--late (só começam quando já estão
+   12% dentro da tela — observer próprio no scripts.js) e viajam mais.
+   Com a margem normal eles animavam ainda abaixo da dobra e, no
+   celular, chegavam "prontos": ninguém via a entrada. */
+.trail .card { --dy: 28px; }
+.js .trail .card { transition-duration: .55s; }
+
+/* A sequência dos três cartões (e das etiquetas "Etapa 0n") só existe
+   de 620px para cima, onde ficam lado a lado e entram juntos. No
+   celular eles se empilham e cada um entra na própria vez — a espera
+   de 700ms do terceiro era o que fazia a etapa demorar a aparecer. */
+.trail .card .card__tag { --d: 180ms; }
+
+@media (min-width: 620px) {
+    .trail .card:nth-of-type(2) { --d: 350ms; }
+    .trail .card:nth-of-type(3) { --d: 700ms; }
+    .trail .card:nth-of-type(2) .card__tag { --d: 530ms; }
+    .trail .card:nth-of-type(3) .card__tag { --d: 880ms; }
+}
+
+/* Carimbo */
+.js .reveal--stamp {
+    translate: none;
+    scale: 1.25;
+    rotate: -4deg;
+    transition:
+        opacity .55s var(--ease-soft) var(--d, 0ms),
+        scale .55s cubic-bezier(.2, 1.3, .4, 1) var(--d, 0ms),
+        rotate .55s cubic-bezier(.2, 1.3, .4, 1) var(--d, 0ms);
+}
+
+/* O bloco da virada é largo: carimbo mais contido */
+.js .turn.reveal--stamp { scale: 1.06; rotate: -1.2deg; }
+
+/* O selo da garantia pousa de mais alto */
+.js .warranty__seal.reveal--stamp { scale: 1.6; rotate: -10deg; transition-duration: .65s; }
+
+.js .reveal--stamp.is-in,
+.js .turn.reveal--stamp.is-in,
+.js .warranty__seal.reveal--stamp.is-in { scale: 1; rotate: 0deg; }
+
+/* Cortina */
+.js .reveal--wipe {
+    opacity: 1;
+    translate: none;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path .6s var(--ease) var(--d, 0ms);
+}
+
+.js .reveal--wipe.is-in { clip-path: inset(0 0 0 0); }
+
+/* A corda da trilha se desenha devagar, no ritmo dos três cartões */
+.js .trail__rope.reveal--wipe { transition-duration: 1.5s; transition-timing-function: linear; }
+
+/* De lado */
+.js .reveal--side { translate: -28px 0; }
+.js .reveal--side:nth-child(even) { translate: 28px 0; }
+.js .reveal--side.is-in { translate: none; }
+
+/* Palavra por palavra: o contêiner não some; cada .w entra sozinho */
+.js .reveal--words { opacity: 1; translate: none; transition: none; }
+
+.js .reveal--words .w {
+    display: inline-block;
+    opacity: 0;
+    translate: 0 .55em;
+    transition:
+        opacity .5s var(--ease-soft),
+        translate .6s var(--ease);
+    transition-delay: calc(var(--d, 0ms) + var(--i, 0) * 70ms);
+}
+
+.js .reveal--words.is-in .w { opacity: 1; translate: none; }
+
+/* Lista que vai se marcando: o texto entra e a caixinha "é marcada"
+   120 ms depois. O atraso cresce com a posição na lista. */
+.js .checks--stagger li {
+    opacity: 0;
+    translate: -8px 0;
+    transition:
+        opacity .4s var(--ease-soft) calc(var(--i, 0) * 55ms),
+        translate .4s var(--ease-soft) calc(var(--i, 0) * 55ms);
+}
+
+.js .checks--stagger li::before {
+    opacity: 0;
+    scale: .4;
+    transition:
+        opacity .25s calc(var(--i, 0) * 55ms + 120ms),
+        scale .35s cubic-bezier(.2, 1.3, .4, 1) calc(var(--i, 0) * 55ms + 120ms);
+}
+
+.checks--stagger li:nth-child(1) { --i: 0; }
+.checks--stagger li:nth-child(2) { --i: 1; }
+.checks--stagger li:nth-child(3) { --i: 2; }
+.checks--stagger li:nth-child(4) { --i: 3; }
+.checks--stagger li:nth-child(5) { --i: 4; }
+.checks--stagger li:nth-child(6) { --i: 5; }
+.checks--stagger li:nth-child(7) { --i: 6; }
+.checks--stagger li:nth-child(8) { --i: 7; }
+.checks--stagger li:nth-child(9) { --i: 8; }
+
+/* A lista dispara quando o cartão que a contém (.card, .offer) entra */
+.js .is-in .checks--stagger li,
+.js .is-in .checks--stagger li::before { opacity: 1; translate: none; scale: none; }
+
+/* A palavra de tinta ganha um sublinhado que cresce depois de o
+   título entrar. Fundo de 2px, não border: cresce por background-size,
+   sem mexer no layout. --ink-d adia (o hero espera as palavras). */
+.js .reveal .ink-gold,
+.js .reveal .ink-rust {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 0% 2px;
+    background-position: 0 100%;
+    transition: background-size .55s var(--ease) calc(var(--d, 0ms) + var(--ink-d, 350ms));
+}
+
+.js .reveal.is-in .ink-gold,
+.js .reveal.is-in .ink-rust { background-size: 100% 2px; }
 
 /* ═══════════ CENTRALIZAÇÃO — PROBLEMA E FAQ (todas as telas) ═
    Diferente do bloco de mobile abaixo, este vale em qualquer
@@ -1848,12 +2195,21 @@ strong { color: var(--bone); font-weight: 600; }
     .prose,
     .turn { margin-inline: auto; }
 
-    .hero__copy {
+    .hero__copy,
+    .hero__cta {
         align-items: center;
         text-align: center;
     }
 
+    .hero__sub { text-align: center; margin-inline: auto; }
+
     .hero__actions { justify-content: center; }
+
+    /* Reserva espaço pro selo "Mais completo" não cair por cima da
+       primeira linha do título no cartão estreito. Só aqui: no
+       tablet e no desktop o cartão tem espaço de sobra. */
+    .offer--featured .offer__title,
+    .offer--featured .offer__name { padding-right: 6.5rem; }
 
     .card__body { align-items: center; }
 
@@ -1949,45 +2305,60 @@ strong { color: var(--bone); font-weight: 600; }
        mais estreito que isso, o preço grande (clamp em vw) não cabe
        na coluna e quebra feio. */
     .offers { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .offer  { max-width: none; }
 
     .hero {
+        display: flex;
         align-items: center;
-        padding-block: 8rem 6rem;
+        min-height: 100svh;
+        padding-block: 6rem 4rem;
     }
 
-    /* Texto confinado à coluna da esquerda; a direita fica para a foto */
-    .hero__grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
-
-    /* A foto desce da direita e sua borda esquerda derrete no escuro,
-       para o rosto dele não ficar embaixo do título. */
-    .hero__photo {
-        inset: 0 -6% 0 26%;
-        -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
-        mask-image: linear-gradient(90deg, transparent 0%, #000 30%);
+    /* Texto à esquerda em três faixas (manchete, subtítulo, CTA); o
+       vídeo ocupa a coluna da direita inteira, centralizado nela. */
+    .hero__grid {
+        grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+        grid-template-areas:
+            "copy  media"
+            "sub   media"
+            "cta   media";
+        column-gap: 3.5rem;
+        row-gap: 1.25rem;
     }
 
-    .hero__photo img {
-        height: 100%;
-        aspect-ratio: auto;
-        object-position: center 30%;
-    }
+    /* A coluna do vídeo estica até a largura do grid (sem justify-self:
+       center, que encolhia o item até o conteúdo e, como a largura do
+       quadro é uma porcentagem, derrubava tudo para zero); quem
+       centraliza a moldura dentro dela é o flex do .vsl. */
+    .vsl__frame { width: min(100%, calc(76svh * 9 / 16 + 18px)); }
 
     .hero__scrim {
         background:
             linear-gradient(100deg,
-                rgba(36, 26, 16, .92) 0%,
-                rgba(36, 26, 16, .74) 30%,
-                rgba(36, 26, 16, .34) 52%,
-                rgba(36, 26, 16, .22) 72%,
-                rgba(36, 26, 16, .5) 100%),
+                rgba(36, 26, 16, .9) 0%,
+                rgba(36, 26, 16, .72) 38%,
+                rgba(36, 26, 16, .46) 68%,
+                rgba(36, 26, 16, .62) 100%),
             linear-gradient(to bottom,
-                rgba(36, 26, 16, .5) 0%,
-                transparent 26%,
-                rgba(36, 26, 16, .45) 78%,
-                var(--void) 99%);
+                rgba(36, 26, 16, .4) 0%,
+                transparent 28%,
+                rgba(36, 26, 16, .5) 80%,
+                var(--void) 100%);
     }
 
-    .scroll-hint { display: block; }
+    /* Deriva sutil dos fundos ao rolar, sem JS: cada foto anda um pouco
+       mais devagar que a página. Só onde o navegador suporta linha do
+       tempo de rolagem; nos outros a foto fica parada, como antes. O
+       FAQ fica de fora: o scripts.js trava a altura do fundo dele, e o
+       inset negativo brigaria com isso. */
+    @supports (animation-timeline: view()) {
+        .has-bg:not(.section--faq) .section-bg {
+            inset: -7% 0;
+            animation: bg-drift linear both;
+            animation-timeline: view();
+        }
+
+    }
 
     /* Dois depoimentos: mantém duas colunas e centraliza o par. Com
        três colunas sobraria uma vazia e os cartões encostariam à
@@ -2025,6 +2396,12 @@ strong { color: var(--bone); font-weight: 600; }
     .turn { padding: 2.2rem 2rem 2.2rem 2.6rem; }
 }
 
+/* Percurso da deriva dos fundos (ver o @supports no bloco de 940px) */
+@keyframes bg-drift {
+    from { transform: translateY(-4%); }
+    to   { transform: translateY(4%); }
+}
+
 /* ── PONTEIRO FINO: efeitos só onde faz sentido ──────────── */
 @media (hover: none) {
     .tintype:hover { transform: none; }
@@ -2042,9 +2419,21 @@ strong { color: var(--bone); font-weight: 600; }
         scroll-behavior: auto !important;
     }
 
-    .js .reveal { opacity: 1; transform: none; }
+    .js .reveal,
+    .js .reveal--words .w,
+    .js .checks--stagger li,
+    .js .checks--stagger li::before,
+    .js .vsl.reveal .vsl__play-icon { opacity: 1; translate: none; scale: none; rotate: none; }
+    .js .reveal--wipe { clip-path: none; }
+    .js .reveal .ink-gold,
+    .js .reveal .ink-rust { background-size: 100% 2px; }
     .fx-grain { animation: none; }
     .ticker__track { animation: none; }
+    .section-bg,
+    .section-bg::before,
+    .section-bg::after,
+    .hero__photo::before,
+    .hero__photo::after { animation: none; }
+    .vsl__play-icon::before { animation: none; }
     .hero__dust { display: none; }
-    .scroll-hint { display: none; }
 }

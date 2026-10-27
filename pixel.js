@@ -26,15 +26,20 @@
     var OFERTAS = {
         combo: {
             slug:  'r3k5wcq',
-            valor: 337,
+            valor: 347,
             nome:  'Método GuidaGaita + gaita Easttop T104S'
         },
         curso: {
             slug:  '6z65zng',
-            valor: 247,
+            valor: 297,
             nome:  'Método GuidaGaita completo'
         }
     };
+    /* Preços de 26/10/2026. O slug é o primeiro trecho do link
+       (payfast.greenn.com.br/<slug>/offer/<id>): quando o Greenn
+       gera um link novo para a mesma oferta, muda o <id> e o slug
+       fica — foi o que aconteceu nessa troca. Se um dia o slug
+       mudar, o pixel para de reconhecer o plano: mude aqui também. */
 
     /* ── Código base da Meta ─────────────────────────────────
        Copiado literal da documentação. O que ele faz de
@@ -207,6 +212,41 @@
         });
     }
 
+    /* ── A VSL ───────────────────────────────────────────────
+       VSLPlay no primeiro play (uma vez por carga) e VSLProgresso
+       nos quartos do vídeo. O <video> é nativo, então o tempo vem
+       de graça no timeupdate; o 100 sai do `ended`, porque o último
+       timeupdate costuma parar em 99,8%. O laço, e não um `if`,
+       conta os marcos pulados por quem arrasta a barra. */
+    function wireVSL() {
+        var video = document.getElementById('vsl');
+        if (!video) return;
+
+        var deuPlay = false;
+        var marcos = [25, 50, 75, 100];
+        var proximo = 0;
+
+        var marcar = function (pct) {
+            while (proximo < marcos.length && pct >= marcos[proximo]) {
+                custom('VSLProgresso', { pct: marcos[proximo] });
+                proximo++;
+            }
+        };
+
+        video.addEventListener('play', function () {
+            if (deuPlay) return;
+            deuPlay = true;
+            custom('VSLPlay', { origem: 'hero' });
+        });
+
+        video.addEventListener('timeupdate', function () {
+            if (!video.duration) return;
+            marcar((video.currentTime / video.duration) * 100);
+        });
+
+        video.addEventListener('ended', function () { marcar(100); });
+    }
+
     /* ══════════ PÁGINAS DE OBRIGADO ══════════ */
 
     /* O ideal é o eventID ser o número da transação: aí a Meta
@@ -280,6 +320,7 @@
             wireCtas();
             wireScroll();
             wireFAQ();
+            wireVSL();
         }
 
         if (/\/obrigado-gaita\/?$/.test(rota)) {

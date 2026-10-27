@@ -9,13 +9,15 @@ build e sem dependências: os arquivos da raiz são o site inteiro.
 landing-page-vendas/
 ├─ index.html      → conteúdo e estrutura das seções
 ├─ styles.css      → design system completo (cores, tipografia, animações)
-├─ scripts.js      → revelações, contadores, parallax, FAQ, parâmetros de campanha
+├─ scripts.js      → revelações, contadores, VSL, parallax, FAQ, parâmetros de campanha
+├─ hero-fx.js      → partículas do hero (só decoração; três presets)
 ├─ pixel.js        → Meta Pixel: código base e todos os eventos
 ├─ obrigado.css    → folha das duas telas de pós-compra
 ├─ obrigado.js     → brasas flutuantes dessas telas (só decoração)
 ├─ obrigado/       → rota /obrigado — compra só do curso
 ├─ obrigado-gaita/ → rota /obrigado-gaita — curso + gaita
-├─ assets/         → fotos (masters + variantes) e fontes
+├─ assets/         → fotos (masters + variantes), fontes e o vídeo da VSL
+├─ specs/          → uma spec por demanda, mais a constituição do projeto
 └─ tools/          → script de imagens, rodado à mão (não é build do site)
 ```
 
@@ -50,11 +52,13 @@ Google. Só faz sentido acrescentar se você passar a coletar notas de fato.
 página que recebe pagamento isso costuma ser exigido, inclusive pelo próprio
 Greenn. Crie as duas páginas e troque os `href`.
 
-### 3. Parcelamento é estimativa
+### 3. Parcela do combo é derivada
 
-"12x de R$ 25,39" (R$ 247) e "12x de R$ 34,64" (R$ 337) foram calculados
-aplicando a taxa de juros que o parcelamento antigo já tinha. Confirme os
-valores reais no painel do Greenn e ajuste no `index.html`.
+"12x de R$ 30,54" (curso, R$ 297) é o número que o próprio vídeo da VSL
+mostra. "12x de R$ 35,68" (curso + gaita, R$ 347) foi calculado com a mesma
+taxa. Confirme o valor do combo no painel do Greenn e, se for outro, ajuste
+no `index.html` (cartão e JSON-LD). Preço e link de cada oferta vivem em
+quatro lugares; a lista está em `specs/001-precos-e-checkout/spec.md`.
 
 ## Endereço de publicação
 
@@ -76,9 +80,10 @@ visitante, só fica no repositório.
 
 | Master | Onde aparece |
 |---|---|
-| `hero-duelo.jpg` | Fundo do topo, fundo da chamada final e imagem de compartilhamento |
+| `hero-duelo.jpg` | Fundo ambiente do topo (atrás da VSL), fundo da chamada final e imagem de compartilhamento |
+| `vsl-poster.jpg` | Pôster da VSL no topo: é o LCP da página. Sai de um frame do vídeo (ver *VSL*) |
 | `bg-vagao.jpg` | Fundo da seção "Por que tanta gente guarda a gaita na gaveta" |
-| `bg-trilhos.jpg` | **Reserva** — era o fundo da prévia em áudio, que foi removida. Master preservado; as variantes (`bg-trilhos-*`, 376 KB) estão órfãs e podem ser apagadas, já que `tools/gerar-imagens.js` as refaz se a foto voltar a ser usada |
+| `bg-trilhos.jpg` | **Reserva** — era o fundo da prévia em áudio, que foi removida. Só o master: as variantes foram apagadas e a linha dele no `tools/gerar-imagens.js` está comentada. Descomente e rode o script se a foto voltar |
 | `bg-vagoes.jpg` | Fundo das seções "A trilha" e "Quem te guia" |
 | `bg-encarando.jpg` | Fundo da seção de preço |
 | `bg-trem.jpg` | Fundo dos depoimentos, da garantia, do FAQ e do rodapé |
@@ -121,6 +126,55 @@ usam qualidade bem mais baixa (36) que as fotos nítidas (46-50) de propósito:
 eles aparecem sob `opacity` .4-.8, sépia e um véu escuro, então a perda não
 chega à tela.
 
+## VSL
+
+O vídeo do topo é servido daqui mesmo, da Hostinger: `assets/vsl.mp4`,
+720×1280 (vertical, 9:16), H.264 + AAC, 5 min 22 s, cerca de 1,2 Mbps. Entra
+na página como `<video preload="none">` atrás de um pôster com botão de
+play: **nenhum byte do vídeo baixa antes do clique**. O play vem com som,
+porque o clique é um gesto do visitante, e `playsinline` impede o iPhone de
+abrir o vídeo em tela cheia. Depois do clique os controles nativos aparecem.
+
+### O master não entra no git
+
+O arquivo original (`VSL.mp4`, na raiz, 937 MB em 2160×3840) está no
+`.gitignore`: o GitHub recusa arquivo acima de 100 MB, e o deploy vem do
+GitHub. O que o site serve é a versão comprimida, gerada com:
+
+```bash
+ffmpeg -i VSL.mp4 -vf "scale=720:1280:flags=lanczos" \
+  -c:v libx264 -preset slow -crf 28 -maxrate 2000k -bufsize 4000k \
+  -profile:v high -level 4.0 -pix_fmt yuv420p -movflags +faststart \
+  -c:a aac -b:a 112k -ac 2 assets/vsl.mp4
+```
+
+`+faststart` põe o índice no começo do arquivo; sem ele o navegador precisa
+baixar o MP4 inteiro antes de tocar. Trocou o vídeo: rode o comando de novo,
+gere o pôster (abaixo) e commite os dois.
+
+### Pôster
+
+`assets/vsl-poster.jpg` é um frame do vídeo (1080×1920), extraído com
+`ffmpeg -ss 45 -i VSL.mp4 -frames:v 1 -vf scale=1080:-1 -q:v 2 assets/vsl-poster.jpg`.
+É um master como os outros: `node tools/gerar-imagens.js` gera as variantes
+480/720/1080 que o `<picture>` serve. Como é o maior elemento da primeira
+tela, ele é o LCP: tem `fetchpriority="high"` e um `preload` no `<head>`,
+cujo `imagesizes` precisa bater com o `sizes` do `<picture>`.
+
+### Vale saber
+
+- **Peso no repositório.** Os ~47 MB do MP4 ficam no histórico do git para
+  sempre, e cada visitante que dá play puxa o vídeo do servidor da
+  Hostinger. Se o tráfego crescer, o caminho é Vimeo ou Panda Video (sem
+  "vídeos relacionados", com relatório de retenção): troca-se o `<video>`
+  por um `<iframe>` carregado no clique, e o resto da página não muda.
+- **Medição.** `VSLPlay` e `VSLProgresso` (25/50/75/100 %) saem do
+  `pixel.js` ouvindo o próprio `<video>`; ver *Medição — Meta Pixel*.
+- **Layout.** O vídeo é vertical. No celular ele fica logo abaixo da
+  manchete, com a largura presa a 64 % da altura da tela para o CTA
+  aparecer sem rolar; no desktop ocupa a coluna da direita. A foto do duelo
+  virou fundo ambiente do hero.
+
 ## Fontes
 
 Ficam em `assets/fonts/`, servidas do próprio domínio — não do Google Fonts.
@@ -147,6 +201,17 @@ Seção com muito texto usa foto fraca e véu forte; seção narrativa, o
 contrário. Para trocar a foto de uma seção, basta mudar a classe
 `section-bg--*` no `index.html`.
 
+### Fundos no celular
+
+Até 939 px a foto não cobre a seção inteira: vira uma faixa de no máximo
+150 vw de altura no topo da seção, com o enquadramento natural, e derrete
+no escuro por uma máscara. Antes, `cover` esticava a foto pela seção
+inteira — que no celular é muito mais alta que larga — e sobrava uma fatia
+irreconhecível (na seção do problema, um pedaço de camisa com a cabeça
+cortada). Seção baixa continua inteira, como sempre foi. A regra está no
+bloco "Fundos no celular" do `styles.css`, e é lá que se ajusta a posição
+de cada foto dentro da faixa (`.section-bg--vagao` já tem a sua).
+
 ### Trocar uma foto
 
 Substitua o **master**, mantendo o nome e a proporção aproximada — fundos
@@ -154,6 +219,72 @@ horizontais com 1700–2400 px de largura, retratos verticais com ~820 px. Em
 seguida rode `node tools/gerar-imagens.js` para refazer as variantes, e
 commite as duas coisas. Trocar só o master não muda nada na página: ela serve
 as variantes.
+
+## Movimento
+
+As entradas ao rolar são um vocabulário de classes sobre `.reveal`, todas
+disparadas pelo mesmo `IntersectionObserver` do `scripts.js` e definidas no
+bloco "REVELAÇÃO AO ROLAR" do `styles.css`:
+
+| Classe | Entrada | Onde |
+|---|---|---|
+| `.reveal` | fade + 13 px para cima | padrão |
+| `.reveal--words` | cada `<span class="w" style="--i:n">` sobe na vez dele | manchete do hero, título final |
+| `.reveal--stamp` | carimbo: pousa de cima com leve giro | preço, selo "Mais completo", selo da garantia, a "virada" |
+| `.reveal--wipe` | cortina da esquerda para a direita | faixa rolante, "Etapa 0n", título dos cartões de oferta, corda da trilha |
+| `.reveal--side` | entra de lado (ímpar da esquerda, par da direita) | depoimentos |
+| `.reveal--late` | igual ao padrão, mas só dispara com o bloco 12 % dentro da tela, e sobe 28 px | cartões das etapas e suas etiquetas |
+| `.checks--stagger` | a lista vai se marcando item a item | listas das etapas e das ofertas |
+
+O atraso (`--d`) vai inline no HTML quando é fixo. Nos cartões das etapas
+ele vive no CSS, só de 620 px para cima: lado a lado eles entram em
+sequência; empilhados no celular, cada um entra na própria vez.
+
+Mais quatro coisas sem classe própria: a palavra dourada ou ferrugem de um
+título ganha um sublinhado que cresce depois da entrada; cada botão laranja
+recebe um reflexo único 1 s depois de aparecer (`sheen-once`); a barra fixa
+do celular pisca uma vez ao chegar na trilha e outra nos depoimentos
+(`setupDockFlash` no `scripts.js`, classe `is-flashing`); e, no desktop, os
+fundos fotográficos derivam ao rolar via `animation-timeline` (só em
+navegador que suporta; nos outros ficam parados).
+
+Regras: só `opacity`, `clip-path` e as propriedades individuais `translate`,
+`scale` e `rotate` (não `transform`, para o hover dos cartões continuar
+funcionando); atraso por `--d` e `--i` no HTML, nunca por JS; tudo desligado
+por `prefers-reduced-motion`; sem JS, tudo visível. O que não leva o olho ao
+CTA nem conta a história (trilhos, duelo, brasa) não entra.
+
+### Foto que revela
+
+Cada foto de fundo (e a do hero) entra em sépia monocromática e vai ganhando
+cor conforme sobe pela tela, como papel fotográfico no banho; ao sair pelo
+topo, volta ao sépia. São duas camadas dentro do próprio elemento (bloco
+"FOTO QUE REVELA" do `styles.css`), pintadas com um tom sépia em
+`mix-blend-mode: multiply` (tinge e escurece, para o olho notar): a de entrada some durante o intervalo `entry` da
+linha do tempo de rolagem, a de saída aparece durante o `exit`. Só
+`opacity`, sem JS. Onde o navegador não tem `animation-timeline` (Firefox,
+iPhone antes do iOS 26) a foto fica num sépia leve e fixo. A força é a
+variável `--sepia` (1 = monocromático de verdade nas pontas) e o tom é
+`--sepia-cor`; as duas podem ser ajustadas por foto, por exemplo
+`.section--final .section-bg { --sepia: .7 }`.
+
+## Partículas do hero
+
+O canvas atrás da primeira tela é o `hero-fx.js`, um arquivo à parte porque
+é só decoração. O efeito sai do atributo `data-fx` do `<canvas>` no
+`index.html`:
+
+| Preset | O que é |
+|---|---|
+| `vento` (padrão) | poeira de estrada cruzando o quadro, com rajadas — a cena do duelo |
+| `fumaca` | vapor do trem subindo devagar |
+| `brasas` | os pontos de luz que o hero tinha antes |
+
+Para comparar, troque o atributo e recarregue. O motor é o mesmo para os
+três: pausa fora da tela e com a aba oculta, limita o DPR a 2, reaproveita
+um sprite por partícula e integra o movimento por tempo — em tela de 120 Hz
+a poeira anda na mesma velocidade que em 60 Hz (a versão anterior corria o
+dobro). Orçamento: até 70 partículas no celular e 130 no desktop.
 
 ## Publicação
 
@@ -199,7 +330,7 @@ A animação das gaitas é cópia da vitrine da oferta (`.offer__photos`, no
 
 Pixel `1397849958862391` (Facebook/Instagram Ads), instalado nas três páginas.
 
-Todo o código vive em **`pixel.js`**: o snippet base da Meta e os oito
+Todo o código vive em **`pixel.js`**: o snippet base da Meta e os dez
 eventos. Está num arquivo só, e não colado no `<head>` de cada página, porque
 o site não tem template — snippet copiado em três lugares é o tipo de coisa
 que alguém atualiza em dois e esquece no terceiro, e aí as páginas passam a
@@ -217,18 +348,21 @@ troque nos quatro.**
 | `PageView` | as três | ao abrir |
 | `ViewContent` | home | a seção de preços entra na tela |
 | `InitiateCheckout` | home | clique num dos dois botões do Greenn, com o valor do plano |
-| `Purchase` | `/obrigado` e `/obrigado-gaita` | ao abrir, com R$ 247 ou R$ 337 |
+| `Purchase` | `/obrigado` e `/obrigado-gaita` | ao abrir, com R$ 297 ou R$ 347 |
 | `Contact` | `/obrigado-gaita` | clique no botão de WhatsApp |
 | `ScrollDepth` * | home | passou de 25, 50, 75 e 90% da página |
 | `CTAOferta` * | home | clique num dos cinco botões que levam a `#oferta`, com a origem |
 | `FAQAberta` * | home | abriu uma pergunta do FAQ, com o texto dela |
+| `VSLPlay` * | home | primeiro play no vídeo do topo |
+| `VSLProgresso` * | home | o vídeo passou de 25, 50, 75 e 100% |
 
 `*` eventos personalizados: aparecem em relatório, mas a Meta não os usa para
 otimizar campanha. Os cinco de cima são os padrão dela.
 
 **Qual plano é qual** sai do slug do link do Greenn — `r3k5wcq` é o combo com
-a gaita (R$ 337), `6z65zng` é só o curso (R$ 247). Mudou a oferta no Greenn,
-mude o `OFERTAS` no `pixel.js`.
+a gaita (R$ 347), `6z65zng` é só o curso (R$ 297). O slug é o primeiro trecho
+do link; o `offer/<id>` depois dele muda quando o Greenn gera um link novo,
+e o pixel não liga para isso. Mudou o slug, mude o `OFERTAS` no `pixel.js`.
 
 ### O `Purchase` não conta duas vezes
 
@@ -257,7 +391,7 @@ rastreamento que vieram na URL.
 ```
 guidagaita.com/?utm_source=ig&utm_campaign=set&fbclid=ABC&cupom=METADE
                               ↓
-payfast.greenn.com.br/r3k5wcq/offer/Xl6vxa
+payfast.greenn.com.br/r3k5wcq/offer/VLq50u
     ?ch_id=141821&b_id_1=jfgn4jm                 ← intactos
     &utm_source=ig&utm_campaign=set&fbclid=ABC   ← somados
                                  cupom fica de fora
