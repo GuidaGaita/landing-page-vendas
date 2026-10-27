@@ -18,18 +18,28 @@ function setupReveal() {
         return;
     }
 
-    // Margem inferior positiva estende a área de observação para BAIXO da
-    // tela: o elemento já começa a aparecer antes de entrar no campo de
-    // visão, então quem rola encontra o conteúdo pronto em vez de esperar.
-    const io = new IntersectionObserver((entries, obs) => {
+    const observar = rootMargin => new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
             if (!entry.isIntersecting) return;
             entry.target.classList.add('is-in');
             obs.unobserve(entry.target);
         });
-    }, { threshold: 0, rootMargin: '0px 0px 14% 0px' });
+    }, { threshold: 0, rootMargin });
 
-    targets.forEach(el => io.observe(el));
+    // Margem inferior positiva estende a área de observação para BAIXO da
+    // tela: o elemento já começa a aparecer antes de entrar no campo de
+    // visão, então quem rola encontra o conteúdo pronto em vez de esperar.
+    const cedo = observar('0px 0px 14% 0px');
+
+    // O contrário, para blocos altos (.reveal--late: os cartões das
+    // etapas e suas etiquetas): só começam quando já estão 12% dentro
+    // da tela. Com a margem de cima eles animavam ainda abaixo da dobra
+    // e, no celular, chegavam "prontos" — ninguém via a entrada.
+    const tarde = observar('0px 0px -12% 0px');
+
+    targets.forEach(el => {
+        (el.classList.contains('reveal--late') ? tarde : cedo).observe(el);
+    });
 }
 
 /* ── Contadores dos números de prova ─────────────────────── */
@@ -72,123 +82,41 @@ function setupCounters() {
     nums.forEach(el => io.observe(el));
 }
 
-/* ── Poeira em suspensão no hero ─────────────────────────── */
-function setupDust() {
-    const canvas = document.getElementById('dust');
-    if (!canvas || REDUCED) return;
+/* ── Partículas do hero ──────────────────────────────────────
+   Moraram aqui como setupDust(). Agora vivem no hero-fx.js, um
+   arquivo à parte: é só decoração, tem três presets (vento, fumaça,
+   brasas) e é o trecho mais provável de ser trocado de novo.
+   ─────────────────────────────────────────────────────────── */
 
-    const hero = canvas.closest('.hero');
-    const ctx = canvas.getContext('2d');
-    let motes = [];
-    let raf = null;
-    let awake = true;
-    // Medidas do palco, guardadas pelo seed(). O draw() rodava um
-    // clientWidth/clientHeight por quadro, e cada leitura dessas obriga
-    // o navegador a recalcular o layout na hora — 60x por segundo, para
-    // buscar dois números que só mudam quando a janela muda de tamanho.
-    let cw = 0;
-    let ch = 0;
+/* ── VSL: fachada → vídeo ────────────────────────────────────
+   O <video> nasce com preload="none": zero bytes até o clique. O
+   que o visitante vê é o pôster com o botão de play. No clique os
+   dois somem, os controles nativos entram e o vídeo toca com som —
+   permitido porque o clique é um gesto do usuário (no iOS também,
+   graças ao playsinline do HTML). Quem mede o play e o progresso é
+   o pixel.js, ouvindo o próprio <video>.
+   ─────────────────────────────────────────────────────────── */
+function setupVSL() {
+    const box = document.querySelector('.vsl');
+    const video = document.getElementById('vsl');
+    const play = box?.querySelector('.vsl__play');
+    if (!box || !video || !play) return;
 
-    /* Halo desenhado uma única vez num canvas à parte. Reaproveitar este
-       sprite dá brilho macio a cada partícula sem recriar um gradiente a
-       cada quadro, que é o que tornaria a densidade alta cara demais. */
-    const GS = 64;
-    const glow = document.createElement('canvas');
-    glow.width = glow.height = GS;
-    const gctx = glow.getContext('2d');
-    const grad = gctx.createRadialGradient(GS / 2, GS / 2, 0, GS / 2, GS / 2, GS / 2);
-    grad.addColorStop(0,    'rgba(255, 228, 178, 1)');
-    grad.addColorStop(0.26, 'rgba(246, 186, 112, .6)');
-    grad.addColorStop(0.58, 'rgba(228, 124, 56, .17)');
-    grad.addColorStop(1,    'rgba(226, 98, 44, 0)');
-    gctx.fillStyle = grad;
-    gctx.fillRect(0, 0, GS, GS);
-
-    const seed = () => {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const w = hero.offsetWidth;
-        const h = hero.offsetHeight;
-
-        cw = w;
-        ch = h;
-
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        canvas.style.width = w + 'px';
-        canvas.style.height = h + 'px';
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        // Densidade proporcional à área, com teto menor no celular
-        const count = Math.min(Math.round((w * h) / 6500), w < 700 ? 70 : 75);
-
-        motes = Array.from({ length: count }, () => {
-            // Cerca de um terço é brasa: maior, mais forte e mais lenta
-            const brasa = Math.random() < 0.3;
-            return {
-                x: Math.random() * w,
-                y: Math.random() * h,
-                r: brasa ? Math.random() * 2.6 + 2.4 : Math.random() * 1.6 + 0.6,
-                vx: (Math.random() - 0.5) * (brasa ? 0.14 : 0.26),
-                vy: -(Math.random() * (brasa ? 0.16 : 0.3) + 0.04),
-                a: brasa ? Math.random() * 0.35 + 0.62 : Math.random() * 0.42 + 0.32,
-                pulse: Math.random() * Math.PI * 2,
-                ritmo: Math.random() * 0.014 + 0.008,
-                balanco: Math.random() * 0.5 + 0.25
-            };
-        });
-    };
-
-    const draw = () => {
-        const w = cw;
-        const h = ch;
-        ctx.clearRect(0, 0, w, h);
-        // Partículas sobrepostas somam luz em vez de se taparem
-        ctx.globalCompositeOperation = 'lighter';
-
-        motes.forEach(m => {
-            m.pulse += m.ritmo;
-            // Sobe balançando de lado, como poeira pega na luz
-            m.x += m.vx + Math.sin(m.pulse) * m.balanco * 0.12;
-            m.y += m.vy;
-
-            // Reentra pelo lado oposto
-            if (m.y < -14) { m.y = h + 14; m.x = Math.random() * w; }
-            if (m.x < -14) m.x = w + 14;
-            if (m.x > w + 14) m.x = -14;
-
-            const d = m.r * 7.5;
-            // Piso alto na pulsação: nenhuma partícula chega a sumir
-            ctx.globalAlpha = Math.max(m.a * (0.7 + 0.3 * Math.sin(m.pulse)), 0);
-            ctx.drawImage(glow, m.x - d / 2, m.y - d / 2, d, d);
-        });
-
-        ctx.globalAlpha = 1;
-        ctx.globalCompositeOperation = 'source-over';
-        raf = requestAnimationFrame(draw);
-    };
-
-    const start = () => { if (!raf) { awake = true; raf = requestAnimationFrame(draw); } };
-    const stop  = () => { if (raf) { cancelAnimationFrame(raf); raf = null; awake = false; } };
-
-    seed();
-    start();
-
-    // Só anima enquanto o hero estiver na tela
-    if ('IntersectionObserver' in window) {
-        new IntersectionObserver(entries => {
-            entries[0].isIntersecting ? start() : stop();
-        }, { threshold: 0 }).observe(hero);
-    }
-
-    document.addEventListener('visibilitychange', () => {
-        document.hidden ? stop() : start();
+    play.addEventListener('click', () => {
+        box.classList.add('is-playing');
+        video.controls = true;
+        const pedido = video.play();
+        // Se o navegador recusar (raro, já que houve clique), os
+        // controles nativos já estão à vista para o visitante tentar.
+        if (pedido && typeof pedido.catch === 'function') pedido.catch(() => {});
     });
 
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { seed(); if (awake) start(); }, 200);
-    }, { passive: true });
+    // Terminou: volta o pôster, para a moldura não ficar num quadro
+    // preto — e o botão deixa rever do começo.
+    video.addEventListener('ended', () => {
+        box.classList.remove('is-playing');
+        video.controls = false;
+    });
 }
 
 /* ── Parallax suave nas fotos emolduradas ────────────────── */
@@ -233,10 +161,24 @@ function setupParallax() {
     apply();
 }
 
-/* ── Cabeçalho que surge depois do hero ──────────────────── */
+/* ── Cabeçalho que surge depois do hero ──────────────────────
+   Aparece quando o hero sai da tela, não numa altura fixa: com a
+   VSL o hero ficou mais alto, e "75% da viewport" cairia no meio do
+   vídeo. O IntersectionObserver diz exatamente quando ele saiu; a
+   margem negativa antecipa um pouco, para o cabeçalho já estar lá
+   quando a faixa rolante aparece. Sem observer, o compasso antigo.
+   ─────────────────────────────────────────────────────────── */
 function setupHeader() {
     const header = document.getElementById('site-header');
+    const hero = document.querySelector('.hero');
     if (!header) return;
+
+    if (hero && 'IntersectionObserver' in window) {
+        new IntersectionObserver(entries => {
+            header.classList.toggle('is-visible', !entries[0].isIntersecting);
+        }, { threshold: 0, rootMargin: '-80px 0px 0px 0px' }).observe(hero);
+        return;
+    }
 
     let ticking = false;
 
@@ -275,6 +217,41 @@ function setupDock() {
 
     if (hero) io.observe(hero);
     if (oferta) io.observe(oferta);
+}
+
+/* ── Barra fixa pisca ao chegar em duas seções ───────────────
+   O botão "Ver planos e valores" fica sempre à vista no celular e
+   por isso não pulsa o tempo todo (seria ruído). Em dois momentos
+   ele pisca uma vez — o reflexo e a brasa do botão do hero — para
+   lembrar que existe: quando a trilha entra e quando os depoimentos
+   entram. A margem negativa espera o topo da seção chegar aos 65%
+   da tela, ou seja, o título já legível, não o primeiro pixel.
+   ─────────────────────────────────────────────────────────── */
+function setupDockFlash() {
+    const btn = document.querySelector('.btn--dock');
+    if (!btn || REDUCED || !('IntersectionObserver' in window)) return;
+
+    const alvos = ['#trilha', '#depoimentos']
+        .map(sel => document.querySelector(sel))
+        .filter(Boolean);
+    if (!alvos.length) return;
+
+    // A classe sai no fim da animação mais longa (a do próprio botão),
+    // para a próxima seção poder piscar de novo. As animações dos
+    // pseudo-elementos também avisam aqui, por isso o filtro pelo nome.
+    btn.addEventListener('animationend', e => {
+        if (e.animationName === 'dock-pop') btn.classList.remove('is-flashing');
+    });
+
+    const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            obs.unobserve(entry.target);
+            btn.classList.add('is-flashing');
+        });
+    }, { threshold: 0, rootMargin: '0px 0px -35% 0px' });
+
+    alvos.forEach(el => io.observe(el));
 }
 
 /* ── Faixa rolante: duplica até fechar o ciclo ───────────── */
@@ -332,6 +309,11 @@ function setupFAQ() {
 
     const travarAltura = () => {
         if (!bg || algumAberto()) return;
+        // No celular o fundo é uma faixa de altura fixa (ver "Fundos no
+        // celular" no styles.css) e não reage ao acordeão; a trava só
+        // atrapalharia, então sai do caminho — inclusive se a janela
+        // acabou de encolher e deixou um valor antigo para trás.
+        if (window.innerWidth < 940) { bg.style.height = ''; return; }
         bg.style.height = `${section.offsetHeight}px`;
     };
 
@@ -417,10 +399,11 @@ function setupCheckoutParams() {
 function boot() {
     setupReveal();
     setupCounters();
-    setupDust();
+    setupVSL();
     setupParallax();
     setupHeader();
     setupDock();
+    setupDockFlash();
     setupTicker();
     setupFAQ();
     setupCheckoutParams();
