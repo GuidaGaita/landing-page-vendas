@@ -5,3 +5,8 @@
 node_modules/
 package.json
 package-lock.json
+
+# O master da VSL (937 MB) nunca entra no git: o GitHub recusa arquivo
+# acima de 100 MB e o deploy da Hostinger vem do GitHub. O que o site
+# serve é a versao comprimida em assets/ (ver README, "VSL").
+/VSL.mp4
