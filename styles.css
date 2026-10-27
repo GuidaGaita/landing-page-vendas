@@ -631,6 +631,22 @@ strong { color: var(--bone); font-weight: 600; }
 
 .js .btn--solid.reveal.is-in::after { animation: sheen-once .9s var(--ease-soft) 1s 1; }
 
+/* Os botões de checkout não têm entrada (.reveal--pronto): o reflexo
+   pode vir antes, assim que o botão chega. */
+.js .btn--solid.reveal--pronto.is-in::after { animation-delay: .5s; }
+
+/* A regra .js .reveal troca a transição inteira do elemento por
+   opacity + translate, e um botão com entrada perdia a do hover — ele
+   pulava 3px sem suavidade. Aqui as duas convivem. */
+.js .btn--solid.reveal {
+    transition:
+        opacity .42s var(--ease-soft) var(--d, 0ms),
+        translate .42s var(--ease-soft) var(--d, 0ms),
+        transform .28s var(--ease),
+        box-shadow .32s var(--ease),
+        background-position .6s var(--ease);
+}
+
 .js .btn--solid.reveal.is-in:hover::after,
 .js .btn--solid.reveal.is-in:focus-visible::after { animation: sheen .85s var(--ease-soft); }
 
@@ -2051,6 +2067,14 @@ strong { color: var(--bone); font-weight: 600; }
 
 /* A corda da trilha se desenha devagar, no ritmo dos três cartões */
 .js .trail__rope.reveal--wipe { transition-duration: 1.5s; transition-timing-function: linear; }
+
+/* Pronto: não some nem entra — o elemento está sempre visível, e o
+   observer só marca a chegada dele (.is-in) para o reflexo do botão.
+   É o caso dos dois botões de checkout: com fade e 520ms de atraso,
+   eles ficavam quase um segundo invisíveis depois de entrar na tela,
+   com a nota "Compra segura" já à vista logo abaixo — um buraco bem
+   onde a venda acontece. Aparecem junto com o cartão. */
+.js .reveal--pronto { opacity: 1; translate: none; }
 
 /* De lado */
 .js .reveal--side { translate: -28px 0; }

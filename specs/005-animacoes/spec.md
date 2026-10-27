@@ -233,3 +233,17 @@ fallback. Medido de novo: entrando ≈ 1, dentro 0, saindo sobe a 1.
 Ajuste de visibilidade: o blend passou de `color` para `multiply`
 (`--sepia-cor: #B8946A`). Só tirar a cor por baixo do véu escuro passava
 batido; escurecer junto faz a foto "revelar" de verdade.
+
+### Botões de checkout sem atraso (27/10/2026)
+
+No desktop os dois botões de checkout demoravam a aparecer: além do
+fade de 420 ms, cada um esperava `--d: 520ms`, e ficavam invisíveis por
+300 a 600 ms depois de entrar na tela, com a nota "Compra segura" já à
+vista logo abaixo. Agora são `.reveal--pronto`: sempre visíveis, junto
+com o cartão; o observer só marca a chegada para o reflexo (que vem
+0,5 s depois, não 1 s). Medido: opacidade 1 no primeiro quadro, contra
+0 a 0,09 nos primeiros 150 ms antes.
+
+De carona, o `.js .reveal` trocava a transição inteira dos botões com
+entrada por `opacity + translate`, e o hover (subir 3 px, sombra) pulava
+sem suavidade. `.js .btn--solid.reveal` agora soma as duas.

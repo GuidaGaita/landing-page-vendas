@@ -234,6 +234,7 @@ bloco "REVELAÇÃO AO ROLAR" do `styles.css`:
 | `.reveal--wipe` | cortina da esquerda para a direita | faixa rolante, "Etapa 0n", título dos cartões de oferta, corda da trilha |
 | `.reveal--side` | entra de lado (ímpar da esquerda, par da direita) | depoimentos |
 | `.reveal--late` | igual ao padrão, mas só dispara com o bloco 12 % dentro da tela, e sobe 28 px | cartões das etapas e suas etiquetas |
+| `.reveal--pronto` | não some nem entra: sempre visível; o observer só marca a chegada para o reflexo do botão | os dois botões de checkout |
 | `.checks--stagger` | a lista vai se marcando item a item | listas das etapas e das ofertas |
 
 O atraso (`--d`) vai inline no HTML quando é fixo. Nos cartões das etapas
